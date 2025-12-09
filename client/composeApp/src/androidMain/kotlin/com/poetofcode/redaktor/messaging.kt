@@ -10,7 +10,7 @@ import com.google.firebase.messaging.FirebaseMessaging
     https://medium.com/@ravisharma23523/sending-notifications-to-mobile-devices-with-firebase-cloud-messaging-fcm-in-node-js-8fe3faead58b
  */
 
-fun Context.retrieveFirebasePushToken(onSuccess: (String) -> Unit) {
+fun Context.retrieveFirebasePushToken(onSuccess: (String) -> Unit) = kotlin.runCatching {
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
         if (!task.isSuccessful) {
             task.exception?.printStackTrace()

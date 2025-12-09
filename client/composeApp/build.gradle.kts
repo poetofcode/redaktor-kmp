@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.compose.compiler)
-    id("com.google.gms.google-services") version "4.4.2" apply false
+    // id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 kotlin {
@@ -46,6 +46,8 @@ kotlin {
             // implementation("io.github.rizmaulana:compose-stacked-snackbar:1.0.4")
             implementation("com.github.skydoves:flexible-bottomsheet-material:0.1.3")
             implementation(compose.materialIconsExtended)
+            implementation("com.mikepenz:multiplatform-markdown-renderer:${libs.versions.markdown.renderer.get()}")
+            implementation("com.mikepenz:multiplatform-markdown-renderer-m3:${libs.versions.markdown.renderer.get()}")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -73,7 +75,7 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-    apply(plugin = "com.google.gms.google-services")
+    //apply(plugin = "com.google.gms.google-services")
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
