@@ -1,0 +1,50 @@
+<div class="wrapper">
+    <h1>
+        Успешный вход
+    </h1>
+
+    <a class="logout-link" href="#">Выйти из аккаунта</a>
+</div>
+
+<script type="text/javascript">
+  function logout() {
+      console.log(`Logout...`)
+
+        fetch(`/api/v1/sessions/${getCookie('token')}`, {
+            method: 'DELETE',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            response
+                .json()
+                .then(data => {
+                    if (data.result) {
+                        window.location.href = "/front";
+                        return;
+                    }
+                    if (!data.result) {
+                        showToast(data.error, true);
+                    }
+                    console.log(JSON.stringify(data));
+                })
+                .catch(err => {
+                    showToast(err.message, true);
+                    console.log(err);
+                });
+        })
+        .catch(err => {
+            showToast(err.message, true);
+            console.log(err);
+        });
+  }
+
+  $('.logout-link').click(function(e) {
+    e.preventDefault();
+    if (confirm(`Уверены, что хотите выйти из аккаунта?`)) {
+      logout();
+    } 
+  });
+</script>

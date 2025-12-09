@@ -1,0 +1,197 @@
+* {
+	font-family: Arial, sans-serif;
+	box-sizing: border-box;
+}
+
+a {
+  color: #008c56;	
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+.mono {
+	font-family: monospace; 
+	font-size: 16px;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.hidden {
+	display: none !important; 
+}
+
+html, body {
+	background: #4587A7;
+	padding-bottom: 40px;
+}
+
+.sidenav {
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 50px;
+  left: -710px;
+  margin: 0 50%;
+  /* background: #eee; */
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  /* color: #2196F3; */
+  color: white;
+  display: block;
+  text-align: right;
+}
+
+.sidenav a:hover {
+  color: #064579;
+}
+
+.wrapper {
+	background-color: #EEE;
+	width: 960px;
+	margin: 0 auto;
+	margin-top: 50px;
+	padding: 20px 40px;
+}
+
+table {
+	border: 0px;
+}
+td {
+	padding: 10px 20px;
+}
+tr:nth-child(even) {background: #DDD}
+tr:nth-child(odd) {background: #FFF}
+
+.modern-button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  color: white !important;
+}
+.modern-button:hover {
+	text-decoration: none !important;
+}
+
+.modern-button-yellow {
+	background-color: yellow;
+	color: black !important;
+}
+
+.modern-button-blue {
+	background-color: blue;
+	/* color: black !important; */
+}
+
+pre {
+	color: #AAA;
+	background-color: #131313; 
+	padding: 10px 20px;
+    overflow-x: scroll;
+}
+
+#snippet-header {
+	background-color: #CCC;
+	position: fixed;
+	width: 960px;
+	top: 0;
+	left: 50%;
+	margin-left: -480px;
+	height: 50px;
+}
+
+#snippet-header table {
+	height: 100%;
+}
+
+#editor {
+	position: fixed;
+	top: 50px;
+	bottom: 0;
+	width: 960px;
+	left: 50%;
+	margin-left: -480px;
+}
+#editor * {
+	font-family: monospace;
+}
+
+.snippet > table {
+	margin-top: 20px;
+}
+.snippet > table tr, .snippet > table td {
+	background: lightgray;
+}
+.snippet pre {
+	margin-top: 0px;
+}
+
+.add-project, .add-endpoint {
+	margin-top: 20px;
+}
+
+.form-field {
+	margin-bottom: 10px;
+}
+
+.form-field input {
+	font-size: 20px;
+}
+
+.form-field button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  color: white !important;
+  margin-top: 10px;
+}
+
+
+.logdump {
+   font-family: "courier new", courier, monospace;
+   font-size: 16px;
+   font-weight: 600;
+   margin: 0;
+}
+
+.logdump .colorNum32 {
+	color: Green;
+}
+
+.logdump .colorNum36 {
+	color: Blue;
+}
+
+.logdump .colorNum90 {
+	color: Gray;
+}
+
+.logdump .colorNum31 {
+	color: Red;
+}
+
+.logdump .colorNum33 {
+	color: Yellow;
+}

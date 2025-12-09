@@ -1,0 +1,30 @@
+<div class="wrapper">
+	<p class="text-waiting">Подождите, выполняется вход...</p>
+	<a class="link-to-main hidden" href="/front">Открыть главную</a>
+</div>
+
+<script type="text/javascript">
+
+	function onStart() {
+		// TODO hide "text-waiting"
+		// TODO show "link-to-main"
+		const jsBridge = window.kmpJsBridge
+		if (!jsBridge) {
+			console.log("JsBridge not found");
+			return;
+		}
+		jsBridge.callNative("saveToken", JSON.stringify({
+			token:"{{token}}",
+			email: "{{email}}"
+		}),
+		  function (data) {
+		    console.log("Greet from Native: " + data);
+		  }
+		);
+	}
+
+	$(function() {
+		setTimeout(onStart, 100);
+	});
+
+</script>

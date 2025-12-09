@@ -1,0 +1,59 @@
+<div class="wrapper">
+	<h2>Авторизация</h2>
+	<form method="POST" action="/front/login">
+		<div class="form-field">
+			<input type="username" placeholder="Логин" name="username" required />
+		</div>
+		<div class="form-field">
+			<input type="password" placeholder="Пароль" name="password" required /> 
+		</div>
+		<div class="form-field">
+			<button class="btn" type="submit">Войти</button>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	{{#if authError}}
+		showToast('Неверные логин или пароль', true);
+	{{/if}}
+
+
+	function onStart() {
+		// TODO hide "text-waiting"
+		// TODO show "link-to-main"
+
+		const jsBridge = window.kmpJsBridge
+		if (!jsBridge) {
+			console.log("JsBridge not found");
+			return;
+		}
+		jsBridge.callNative("getToken", "",
+		  function (data) {
+		    console.log("[getToken] from Native: " + data);
+		    const parsed = JSON.parse(data);
+		    console.log(`Token: ${parsed.token}`);
+
+			const cookieToken = getCookie('token');
+			console.log(document.cookie);
+			console.log(`cookieToken = ${cookieToken}`);
+
+			if (cookieToken) {
+				console.log('Cookie already set');
+				// TODO invoke erase cookie on app-side
+				return;
+			}
+		    
+   			setCookie("token", parsed.token, 10000);
+			// console.log(document.cookie);
+
+			window.location.href = "/front";
+			// TODO make redirect on root
+		  }
+		);
+	}
+
+	$(function() {
+		setTimeout(onStart, 100);
+	});
+</script>
