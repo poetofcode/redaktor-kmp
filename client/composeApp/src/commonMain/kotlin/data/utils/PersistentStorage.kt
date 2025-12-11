@@ -4,7 +4,6 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
@@ -91,13 +90,18 @@ class FileContentProvider(
     val fileName: String,
     val relativePath: String,
 ) : ContentProvider {
+
     override fun provideContent(): String {
         val cachePath = File("./", relativePath)
         cachePath.mkdirs()
-        val stream = File("$cachePath/$fileName").bufferedReader()
-        return try { stream.use { it.readText() } } catch (e: Throwable) {
-            String()
+        val file = File(cachePath, fileName)
+
+        if (!file.exists()) {
+            file.createNewFile()
+            return ""
         }
+
+        return file.bufferedReader().use { it.readText() }
     }
 
     override fun saveContent(content: String) {
