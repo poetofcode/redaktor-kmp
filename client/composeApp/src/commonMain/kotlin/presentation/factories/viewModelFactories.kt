@@ -3,6 +3,8 @@ package presentation.factories
 import data.repository.JokeRepository
 import data.repository.ProfileRepository
 import data.repository.RepositoryFactory
+import data.repository.UseCaseFactory
+import domain.usecase.EditorUseCase
 import presentation.base.ViewModelFactory
 import presentation.screens.authScreen.AuthViewModel
 import presentation.screens.homeTabScreen.HomeTabViewModel
@@ -12,9 +14,9 @@ import presentation.screens.profileTabScreen.ProfileTabViewModel
 import presentation.screens.regScreen.RegViewModel
 
 
-class HomeTabViewModelFactory() : ViewModelFactory<HomeTabViewModel> {
+class HomeTabViewModelFactory(val editorUseCase: EditorUseCase) : ViewModelFactory<HomeTabViewModel> {
     override fun createViewModel(): HomeTabViewModel {
-        return HomeTabViewModel()
+        return HomeTabViewModel(editorUseCase)
     }
 
     override val vmTypeName: String
@@ -97,11 +99,12 @@ class NotificationsViewModelFactory(private val profileRepository: ProfileReposi
 
 
 fun viewModelFactories(
-    repositoryFactory: RepositoryFactory
+    repositoryFactory: RepositoryFactory,
+    useCaseFactory: UseCaseFactory,
 ): List<ViewModelFactory<*>> {
     val profileRepository = repositoryFactory.createProfileRepository()
     return listOf<ViewModelFactory<*>>(
-        HomeTabViewModelFactory(),
+        HomeTabViewModelFactory(useCaseFactory.createEditorUseCase()),
       /*
 StartViewModelFactory(
             repositoryFactory.createJokeRepository(),

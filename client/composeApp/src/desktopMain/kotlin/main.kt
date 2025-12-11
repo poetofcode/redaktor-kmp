@@ -19,6 +19,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import data.repository.RepositoryFactoryImpl
+import data.repository.UseCaseFactoryImpl
 import data.service.NetworkingFactory
 import data.service.NetworkingFactoryImpl
 import data.utils.ContentBasedPersistentStorage
@@ -63,14 +64,25 @@ fun main() = application {
         Config.DeviceTypes.DESKTOP,
     )
 
+    val editorContentProvider = FileContentProvider(
+        fileName = "editor_db.json",
+        relativePath = "appcache",
+    )
+
     val repositoryFactory = RepositoryFactoryImpl(
         api = networkingFactory.createApi(),
         profileStorage = profileStorage,
+        editorContentProvider = editorContentProvider,
     )
+
+    val useCaseFactory = UseCaseFactoryImpl(repositoryFactory)
 
     val vmStoreImpl = ViewModelStore(
         coroutineScope = rememberCoroutineScope(),
-        vmFactories = viewModelFactories(repositoryFactory = repositoryFactory)
+        vmFactories = viewModelFactories(
+            repositoryFactory = repositoryFactory,
+            useCaseFactory = useCaseFactory,
+        )
     )
 
     val storage = ContentBasedPersistentStorage(

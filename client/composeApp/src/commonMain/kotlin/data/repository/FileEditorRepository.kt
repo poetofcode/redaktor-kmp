@@ -1,11 +1,11 @@
 package data.repository
 
+import data.utils.ContentProvider
 import domain.repository.EditorRepository
 import domain.model.Element
 import domain.model.LinkElement
 import domain.model.Page
 import domain.model.TextElement
-import data.utils.FileDBContentProvider
 import data.utils.createUUID
 import data.utils.swap
 import kotlinx.serialization.SerialName
@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 
 class FileEditorRepository(
-    val dbProvider: FileDBContentProvider,
+    val dbProvider: ContentProvider,
 ) : EditorRepository {
 
     private var _data: PersistentData? = null
@@ -180,7 +180,7 @@ class FileEditorRepository(
             return _data!!
         }
         return try {
-            val dbJson = dbProvider.provideJsonDB()
+            val dbJson = dbProvider.provideContent()
             customJson.decodeFromString<PersistentData>(dbJson).apply {
                 _data = this
             }
@@ -193,7 +193,7 @@ class FileEditorRepository(
 
     private suspend fun saveAllData() {
         val encoded = customJson.encodeToString(_data ?: return)
-        dbProvider.saveJsonContent(encoded)
+        dbProvider.saveContent(encoded)
     }
 }
 

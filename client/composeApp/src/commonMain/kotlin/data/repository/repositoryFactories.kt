@@ -1,7 +1,9 @@
 package data.repository
 
 import data.service.MainApi
+import data.utils.ContentProvider
 import data.utils.ProfileStorage
+import domain.repository.EditorRepository
 
 interface RepositoryFactory {
 
@@ -9,11 +11,14 @@ interface RepositoryFactory {
 
     fun createProfileRepository(): ProfileRepository
 
+    fun createEditorRepository(): EditorRepository
+
 }
 
 class RepositoryFactoryImpl(
     val api: MainApi,
     val profileStorage: ProfileStorage,
+    val editorContentProvider: ContentProvider,
 ) : RepositoryFactory {
 
     override fun createJokeRepository(): JokeRepository {
@@ -27,4 +32,10 @@ class RepositoryFactoryImpl(
         )
     }
 
+    override fun createEditorRepository(): EditorRepository {
+        return FileEditorRepository(editorContentProvider)
+    }
+
 }
+
+
