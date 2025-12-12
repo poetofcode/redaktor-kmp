@@ -4,13 +4,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import com.mikepenz.markdown.m3.Markdown
 import kotlinx.coroutines.flow.collectLatest
 import presentation.Tabs
-import presentation.navigation.*
+import presentation.navigation.BaseScreen
+import presentation.navigation.NavStateImpl
+import presentation.navigation.NavigateBackEffect
+import presentation.navigation.NavigateEffect
+import presentation.navigation.Navigator
+import presentation.navigation.SharedMemory
+import presentation.screens.catalog.CatalogScreen
 
 
-class HomeTabScreen() : BaseScreen<HomeTabViewModel>() {
+class HomeTabScreen : BaseScreen<HomeTabViewModel>() {
 
     override val screenId: String
         get() = Tabs.HOME.key
@@ -20,7 +25,7 @@ class HomeTabScreen() : BaseScreen<HomeTabViewModel>() {
 
     private val navState by lazy {
         NavStateImpl(viewModelStore).apply {
-            // push(StartScreen())
+            push(CatalogScreen())
         }
     }
 
@@ -44,31 +49,7 @@ class HomeTabScreen() : BaseScreen<HomeTabViewModel>() {
             }
         }
 
-        // Navigator(modifier = Modifier.fillMaxSize(), state = navState)
-
-        Markdown(
-            """
-            # Hello Markdown
-            
-            ## Заголовок 2
-            
-            > Там на неведомых дорожках следы неведомых зверей (с) Цитата
-            
-            This is a simple markdown example with:
-        
-            - Bullet points
-            - **Bold text**
-            - *Italic text*
-        
-            ```
-            fun main() {
-                // TODO create app
-            }
-            ```
-        
-            [Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
-            """.trimIndent()
-        )
+        Navigator(modifier = Modifier.fillMaxSize(), state = navState)
     }
 
 }

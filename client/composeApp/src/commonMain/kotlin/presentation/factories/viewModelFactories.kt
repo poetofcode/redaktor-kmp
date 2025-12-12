@@ -7,6 +7,7 @@ import data.repository.UseCaseFactory
 import domain.usecase.EditorUseCase
 import presentation.base.ViewModelFactory
 import presentation.screens.authScreen.AuthViewModel
+import presentation.screens.catalog.CatalogViewModel
 import presentation.screens.homeTabScreen.HomeTabViewModel
 import presentation.screens.notificationsScreen.NotificationsViewModel
 import presentation.screens.profileScreen.ProfileViewModel
@@ -14,13 +15,23 @@ import presentation.screens.profileTabScreen.ProfileTabViewModel
 import presentation.screens.regScreen.RegViewModel
 
 
-class HomeTabViewModelFactory(val editorUseCase: EditorUseCase) : ViewModelFactory<HomeTabViewModel> {
+class HomeTabViewModelFactory : ViewModelFactory<HomeTabViewModel> {
     override fun createViewModel(): HomeTabViewModel {
-        return HomeTabViewModel(editorUseCase)
+        return HomeTabViewModel()
     }
 
     override val vmTypeName: String
         get() = HomeTabViewModel::class.java.typeName
+
+}
+
+class CatalogViewModelFactory(val editorUseCase: EditorUseCase) : ViewModelFactory<CatalogViewModel> {
+    override fun createViewModel(): CatalogViewModel {
+        return CatalogViewModel(editorUseCase)
+    }
+
+    override val vmTypeName: String
+        get() = CatalogViewModel::class.java.typeName
 
 }
 
@@ -104,7 +115,7 @@ fun viewModelFactories(
 ): List<ViewModelFactory<*>> {
     val profileRepository = repositoryFactory.createProfileRepository()
     return listOf<ViewModelFactory<*>>(
-        HomeTabViewModelFactory(useCaseFactory.createEditorUseCase()),
+        HomeTabViewModelFactory(),
       /*
 StartViewModelFactory(
             repositoryFactory.createJokeRepository(),
@@ -116,5 +127,6 @@ StartViewModelFactory(
         AuthViewModelFactory(profileRepository),
         RegViewModelFactory(profileRepository),
         NotificationsViewModelFactory(profileRepository),
+        CatalogViewModelFactory(useCaseFactory.createEditorUseCase())
     )
 }
