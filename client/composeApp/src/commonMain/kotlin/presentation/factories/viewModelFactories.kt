@@ -9,6 +9,7 @@ import presentation.screens.authScreen.AuthViewModel
 import presentation.screens.catalogScreen.CatalogViewModel
 import presentation.screens.homeTabScreen.HomeTabViewModel
 import presentation.screens.notificationsScreen.NotificationsViewModel
+import presentation.screens.pageScreen.PageViewModel
 import presentation.screens.profileScreen.ProfileViewModel
 import presentation.screens.profileTabScreen.ProfileTabViewModel
 import presentation.screens.regScreen.RegViewModel
@@ -24,7 +25,9 @@ class HomeTabViewModelFactory : ViewModelFactory<HomeTabViewModel> {
 
 }
 
-class CatalogViewModelFactory(val editorUseCase: EditorUseCase) : ViewModelFactory<CatalogViewModel> {
+class CatalogViewModelFactory(
+    private val editorUseCase: EditorUseCase
+) : ViewModelFactory<CatalogViewModel> {
     override fun createViewModel(): CatalogViewModel {
         return CatalogViewModel(editorUseCase)
     }
@@ -33,6 +36,19 @@ class CatalogViewModelFactory(val editorUseCase: EditorUseCase) : ViewModelFacto
         get() = CatalogViewModel::class.java.typeName
 
 }
+
+class PageViewModelFactory(
+    private val editorUseCase: EditorUseCase
+) : ViewModelFactory<PageViewModel> {
+    override fun createViewModel(): PageViewModel {
+        return PageViewModel(editorUseCase)
+    }
+
+    override val vmTypeName: String
+        get() = PageViewModel::class.java.typeName
+
+}
+
 
 /*
 class StartViewModelFactory(
@@ -113,6 +129,7 @@ fun viewModelFactories(
     useCaseFactory: UseCaseFactory,
 ): List<ViewModelFactory<*>> {
     val profileRepository = repositoryFactory.createProfileRepository()
+    val editorUseCase = useCaseFactory.createEditorUseCase()
     return listOf<ViewModelFactory<*>>(
         HomeTabViewModelFactory(),
       /*
@@ -126,6 +143,7 @@ StartViewModelFactory(
         AuthViewModelFactory(profileRepository),
         RegViewModelFactory(profileRepository),
         NotificationsViewModelFactory(profileRepository),
-        CatalogViewModelFactory(useCaseFactory.createEditorUseCase())
+        CatalogViewModelFactory(editorUseCase),
+        PageViewModelFactory(editorUseCase),
     )
 }
