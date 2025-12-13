@@ -46,13 +46,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import presentation.composables.DragDropList
 import presentation.model.ActionUI
 import presentation.model.ElementUI
 import presentation.model.PageMode
 import presentation.navigation.BaseScreen
+import presentation.navigation.HideBottomSheetEffect
+import presentation.navigation.ShowModalBottomSheetEffect
+import presentation.navigation.postSideEffect
 import presentation.screens.pageScreen.misc.ElementType
 import specific.BackHandler
 
@@ -89,41 +90,29 @@ class PageScreen(
 
         //      TODO АКТУАЛЬНО ЛИ ДАННОЕ TO_DO ???
 
-        /*
-        val coroutineScope = rememberCoroutineScope()
-        val modalSheetState = rememberModalBottomSheetState(
-            initialValue = ModalBottomSheetValue.Hidden,
-            confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
-            skipHalfExpanded = true,
+        PageContent(
+            focusRequester,
+            onOptionButtonClick = {
+                postSideEffect(ShowModalBottomSheetEffect {
+                    ModalBottomSheetContent()
+                })
+            }
         )
 
-        ModalBottomSheetLayout(
-            sheetState = modalSheetState,
-            sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-            sheetContent = {
-                ModalBottomSheetContent(coroutineScope, modalSheetState)
-            }
-        ) {
-            PageContent(focusRequester, onOptionButtonClick = {
-                coroutineScope.launch { modalSheetState.show() }
-            })
-        }
-
-         */
     }
 
-    /*
     @Composable
-    private fun ModalBottomSheetContent(
-        coroutineScope: CoroutineScope,
-        modalSheetState: ModalBottomSheetState
-    ) {
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    private fun ModalBottomSheetContent() {
+        Column(
+            Modifier.fillMaxWidth().padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
             Spacer(Modifier.size(20.dp))
 
             elementTypes.forEach {
                 ElementTypeItem(titleFromType(elementType = it)) {
-                    coroutineScope.launch { modalSheetState.hide() }
+                    postSideEffect(HideBottomSheetEffect)
                     offerIntent(PageIntent.OnSelectElementType(elementType = it))
                 }
             }
@@ -131,14 +120,13 @@ class PageScreen(
             Button(
                 modifier = Modifier.padding(bottom = 20.dp),
                 onClick = {
-                    coroutineScope.launch { modalSheetState.hide() }
+                    postSideEffect(HideBottomSheetEffect)
                 }
             ) {
                 Text(text = "Отмена")
             }
         }
     }
-     */
 
     private fun titleFromType(elementType: ElementType): String {
         return when (elementType) {
@@ -222,13 +210,13 @@ class PageScreen(
                     }
                     Box(
                         modifier = Modifier
-                        .fillMaxHeight()
-                        .width(50.dp)
-                        .background(Color.Green)
-                        .clickable {
-                            onOptionButtonClick()
-                        }
-                        .padding(5.dp)
+                            .fillMaxHeight()
+                            .width(50.dp)
+                            .background(Color.Green)
+                            .clickable {
+                                onOptionButtonClick()
+                            }
+                            .padding(5.dp)
                     ) {
                         Icon(
                             modifier = Modifier.align(Alignment.Center),
@@ -439,9 +427,9 @@ class PageScreen(
     ) {
         Box(
             modifier = modifier
-            .clickable { onClick() }
-            .border(width = 1.dp, color = Color.LightGray)
-            .padding(5.dp)) {
+                .clickable { onClick() }
+                .border(width = 1.dp, color = Color.LightGray)
+                .padding(5.dp)) {
             Icon(
                 imageVector = imageVector,
                 contentDescription = null

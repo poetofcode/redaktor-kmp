@@ -44,7 +44,7 @@ kotlin {
             implementation(libs.ktor.client.auth)
             implementation("io.github.kevinnzou:compose-webview-multiplatform:2.0.3")
             // implementation("io.github.rizmaulana:compose-stacked-snackbar:1.0.4")
-            implementation("com.github.skydoves:flexible-bottomsheet-material:0.1.3")
+            implementation("com.github.skydoves:flexible-bottomsheet-material:0.1.6")
             implementation(compose.materialIconsExtended)
             implementation("com.mikepenz:multiplatform-markdown-renderer:${libs.versions.markdown.renderer.get()}")
             implementation("com.mikepenz:multiplatform-markdown-renderer-m3:${libs.versions.markdown.renderer.get()}")
