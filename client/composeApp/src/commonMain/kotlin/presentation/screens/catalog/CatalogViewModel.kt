@@ -6,6 +6,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import presentation.base.BaseViewModel
+import presentation.base.postEffect
+import presentation.base.postSharedEvent
+import presentation.model.shared.OnPagesUpdatedEvent
+import presentation.model.shared.OnPagePickedEvent
+import presentation.navigation.NavigateBackEffect
+import presentation.navigation.SharedEvent
 
 class CatalogViewModel constructor(
     private val editorUseCase: EditorUseCase,
@@ -28,8 +34,7 @@ class CatalogViewModel constructor(
             .onEach { pages ->
                 println("mylog Pages: ${pages}")
 
-                /*
-                updateState {
+                reduce {
                     copy(
                         pages = pages.map { page ->
                             PageUI(
@@ -39,8 +44,6 @@ class CatalogViewModel constructor(
                         }
                     )
                 }
-                 */
-
             }
             .catch {
                 it.printStackTrace()
@@ -49,14 +52,13 @@ class CatalogViewModel constructor(
     }
 
     fun handleIntent(intent: CatalogIntent) {
-        /*
         when (intent) {
             is CatalogIntent.OnPageClick -> {
-                offerEffect(
-                    effect = NavigationEffect.Navigate(
-                        RootScreen.PageScreen.withArguments("pageId" to intent.pageId)
-                    )
-                )
+//                postEffect(
+//                    effect = NavigationEffect.Navigate(
+//                        RootScreen.PageScreen.withArguments("pageId" to intent.pageId)
+//                    )
+//                )
             }
 
             CatalogIntent.OnAddPageClick -> {
@@ -67,7 +69,7 @@ class CatalogViewModel constructor(
             }
             is CatalogIntent.OnEditClick -> {
                 val selectedPage = state.value.pages.first { it.id == intent.pageId }
-                updateState {
+                reduce {
                     copy(
                         editablePage = selectedPage
                     )
@@ -77,39 +79,36 @@ class CatalogViewModel constructor(
                 applyChanges()
             }
             CatalogIntent.OnCancelEditClick -> {
-                updateState { copy(editablePage = null) }
+                reduce { copy(editablePage = null) }
             }
             is CatalogIntent.OnEditablePageChanged -> {
-                updateState { copy(editablePage = intent.newPage) }
+                reduce { copy(editablePage = intent.newPage) }
             }
             is CatalogIntent.PassParameter -> {
-                updateState { copy(isPicker = intent.isPicker) }
+                reduce { copy(isPicker = intent.isPicker) }
             }
             is CatalogIntent.OnBindLink -> {
-                offerIntermediateEffect(OnPagePickedEffect(page = intent.page))
-                offerEffect(NavigationEffect.NavigateUp)
-            }
-        }
-
-         */
-    }
-
-    /*
-    override fun handleIntermediateEffect(effect: Effect) {
-        when (effect) {
-            OnPagesUpdatedEffect -> {
-                fetchData()
+                postSharedEvent(OnPagePickedEvent(page = intent.page))
+                postEffect(NavigateBackEffect())
             }
         }
     }
-     */
 
-    /*
+    override fun obtainSharedEvent(event: SharedEvent) {
+        super.obtainSharedEvent(event)
+
+        when (event) {
+           OnPagesUpdatedEvent -> {
+               fetchData()
+           }
+        }
+    }
+
     private fun applyChanges() {
         val updatedPage = state.value.editablePage?.copy() ?: return
         editorUseCase.updatePage(pageId = updatedPage.id, title = updatedPage.title)
             .onEach {
-                updateState {
+                reduce {
                     copy(
                         editablePage = null,
                         pages = state.value.pages.map {
@@ -121,24 +120,21 @@ class CatalogViewModel constructor(
                         }
                     )
                 }
-                offerIntermediateEffect(OnPagesUpdatedEffect)
+                postSharedEvent(OnPagesUpdatedEvent)
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
     }
-     */
 
-    /*
     private fun addNewPage() {
         editorUseCase.createPage()
             .onEach {
                 fetchData()
-                offerIntermediateEffect(OnPagesUpdatedEffect)
+                postSharedEvent(OnPagesUpdatedEvent)
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
     }
-     */
 
     override fun onInitState(): CatalogState = CatalogState()
 

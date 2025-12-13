@@ -53,6 +53,10 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
     private val snackState = mutableStateOf<SnackState>(SnackState())
     private var snackHidingJob: Job? = null
 
+    open fun handleSideEffect(sideEffect: SideEffect) {
+        // Handle custom side effects
+    }
+
     @Composable
     protected fun setMainMenuVisibility() {
         val appState = LocalMainAppState.current
@@ -166,11 +170,11 @@ fun BaseScreen<*>.collectSideEffects() {
                 }
             }
         }
+
+        handleSideEffect(effect)
+
     }.launchIn(scope)
 }
-
-// TODO предусмотреть абстрактный (или пустой открытый) метод для
-//  обработки кастомный side-эффектов
 
 fun BaseScreen<*>.postSideEffect(effect: SideEffect) {
     viewModel.postSideEffect(effect)
