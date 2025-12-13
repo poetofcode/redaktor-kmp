@@ -1,4 +1,4 @@
-package presentation.screens.catalog
+package presentation.screens.catalogScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

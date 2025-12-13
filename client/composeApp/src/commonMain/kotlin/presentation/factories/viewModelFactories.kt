@@ -1,13 +1,12 @@
 package presentation.factories
 
-import data.repository.JokeRepository
 import data.repository.ProfileRepository
 import data.repository.RepositoryFactory
 import data.repository.UseCaseFactory
 import domain.usecase.EditorUseCase
 import presentation.base.ViewModelFactory
 import presentation.screens.authScreen.AuthViewModel
-import presentation.screens.catalog.CatalogViewModel
+import presentation.screens.catalogScreen.CatalogViewModel
 import presentation.screens.homeTabScreen.HomeTabViewModel
 import presentation.screens.notificationsScreen.NotificationsViewModel
 import presentation.screens.profileScreen.ProfileViewModel

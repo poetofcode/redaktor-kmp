@@ -1,4 +1,4 @@
-package presentation.screens.catalog
+package presentation.screens.catalogScreen
 
 import domain.usecase.EditorUseCase
 import presentation.model.PageUI
