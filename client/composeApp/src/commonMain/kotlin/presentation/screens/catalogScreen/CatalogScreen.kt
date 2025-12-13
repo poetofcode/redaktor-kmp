@@ -38,6 +38,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import presentation.model.PageUI
 import presentation.navigation.BaseScreen
@@ -106,19 +107,24 @@ class CatalogScreen(
                             if (!page.isNew) {
                                 Text(
                                     text = page.title,
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier
+                                        .weight(1f)
                                         .padding(),
                                 )
                             } else {
                                 CompositionLocalProvider(LocalContentColor provides Color.LightGray) {
                                     Text(
                                         text = "Введите название",
-                                        modifier = Modifier.padding(),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(),
                                         fontStyle = FontStyle.Italic,
                                     )
                                 }
                             }
-                            Spacer(Modifier.weight(1f))
+                            // Spacer(Modifier.weight(1f))
                             ActionList(page = page)
                         }
                     }
