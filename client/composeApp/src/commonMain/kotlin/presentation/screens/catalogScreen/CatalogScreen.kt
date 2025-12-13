@@ -53,6 +53,8 @@ class CatalogScreen(
 
     val state get() = viewModel.state.value
 
+    override val isMenuVisible: Boolean = true
+
     @Composable
     override fun Content() {
         BackHandler {

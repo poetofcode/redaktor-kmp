@@ -70,6 +70,8 @@ class PageScreen(
 
     val state get() = viewModel.state.value
 
+    override val isMenuVisible: Boolean = false
+
     @Composable
     override fun Content() {
         BackHandler {
