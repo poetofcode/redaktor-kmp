@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
 import data.repository.RepositoryFactoryImpl
+import data.repository.UseCaseFactoryImpl
 import data.service.NetworkingFactory
 import data.service.NetworkingFactoryImpl
 import data.utils.ProfileStorageImpl
@@ -40,17 +41,26 @@ class MainActivity : ComponentActivity() {
         Config.DeviceTypes.ANDROID,
     )
 
+    val editorContentProvider = AndroidContentProvider(
+        fileName = "editor_db.json",
+        context = this,
+    )
+
     val repositoryFactory = RepositoryFactoryImpl(
         api = networkingFactory.createApi(),
-        profileStorage = profileStorage
+        profileStorage = profileStorage,
+        editorContentProvider = editorContentProvider,
     )
 
     private var backHandleCallback: (() -> Boolean)? = null
 
+    val useCaseFactory = UseCaseFactoryImpl(repositoryFactory)
+
     val vmStoreImpl = ViewModelStore(
         coroutineScope = lifecycleScope,
         vmFactories = viewModelFactories(
-            repositoryFactory = repositoryFactory
+            repositoryFactory = repositoryFactory,
+            useCaseFactory = useCaseFactory,
         )
     )
 
