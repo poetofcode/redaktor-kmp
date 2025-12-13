@@ -18,6 +18,7 @@ import presentation.model.PageMode
 import presentation.model.PageUI
 import presentation.model.shared.OnPagePickedEvent
 import presentation.model.shared.OnPagesUpdatedEvent
+import presentation.navigation.NavigateBackEffect
 import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
 import presentation.screens.catalogScreen.CatalogScreen
@@ -276,6 +277,10 @@ class PageViewModel constructor(
                 } else null,
             )
         }
+    }
+
+    fun onBackPress() {
+        postEffect(NavigateBackEffect())
     }
 
     override fun onInitState(): PageState = PageState()

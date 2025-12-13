@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.filled.LinkOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -46,6 +48,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import domain.model.Page
 import presentation.composables.DragDropList
 import presentation.model.ActionUI
 import presentation.model.ElementUI
@@ -72,9 +75,9 @@ class PageScreen(
             when (state.mode) {
                 is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
                 PageMode.Select -> offerIntent(PageIntent.OnFinishEditModeClick)
-                else -> Unit
+                is PageMode.View -> viewModel.onBackPress()
             }
-            state.mode != PageMode.View
+            true
         }
 
         LaunchedEffect(Unit) {
@@ -457,6 +460,20 @@ class PageScreen(
                 is PageMode.Edit -> {
                     Pair("Сохранить") { offerIntent(PageIntent.OnApplyElementChangesClick) }
                 }
+            }
+
+            IconButton(onClick = {
+                when (state.mode) {
+                    is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
+                    PageMode.Select -> offerIntent(PageIntent.OnFinishEditModeClick)
+                    is PageMode.View -> viewModel.onBackPress()
+
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                )
             }
 
             Button(
