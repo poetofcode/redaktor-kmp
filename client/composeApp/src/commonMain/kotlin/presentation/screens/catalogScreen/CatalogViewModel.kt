@@ -11,7 +11,9 @@ import presentation.base.postSharedEvent
 import presentation.model.shared.OnPagesUpdatedEvent
 import presentation.model.shared.OnPagePickedEvent
 import presentation.navigation.NavigateBackEffect
+import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
+import presentation.screens.pageScreen.PageScreen
 
 class CatalogViewModel constructor(
     private val editorUseCase: EditorUseCase,
@@ -54,11 +56,9 @@ class CatalogViewModel constructor(
     fun handleIntent(intent: CatalogIntent) {
         when (intent) {
             is CatalogIntent.OnPageClick -> {
-//                postEffect(
-//                    effect = NavigationEffect.Navigate(
-//                        RootScreen.PageScreen.withArguments("pageId" to intent.pageId)
-//                    )
-//                )
+                postEffect(
+                    NavigateEffect(PageScreen(initialPageId = intent.pageId))
+                )
             }
 
             CatalogIntent.OnAddPageClick -> {

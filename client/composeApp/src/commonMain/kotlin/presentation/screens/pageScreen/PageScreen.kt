@@ -56,7 +56,9 @@ import presentation.navigation.BaseScreen
 import presentation.screens.pageScreen.misc.ElementType
 import specific.BackHandler
 
-class PageScreen : BaseScreen<PageViewModel>() {
+class PageScreen(
+    val initialPageId: String
+) : BaseScreen<PageViewModel>() {
 
     override val viewModel: PageViewModel
         get() = viewModelStore.getViewModel<PageViewModel>()
@@ -72,6 +74,10 @@ class PageScreen : BaseScreen<PageViewModel>() {
                 else -> Unit
             }
             state.mode != PageMode.View
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.pageId = initialPageId
         }
 
         val focusRequester = remember { FocusRequester() }
@@ -133,7 +139,7 @@ class PageScreen : BaseScreen<PageViewModel>() {
         }
     }
      */
-    
+
     private fun titleFromType(elementType: ElementType): String {
         return when (elementType) {
             ElementType.TEXT -> "Текст"

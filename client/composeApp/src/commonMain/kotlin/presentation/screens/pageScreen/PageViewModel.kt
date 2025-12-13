@@ -26,7 +26,12 @@ class PageViewModel constructor(
     val editorUseCase: EditorUseCase,
 ) : BaseViewModel<PageViewModel.PageState>() {
 
-    private val pageId: String? = savedStateHandle["pageId"]
+    var pageId: String? = null
+        set(value) {
+            field = value
+            fetchPageData()
+        }
+
 
     data class PageState(
         val pageId: String? = null,
@@ -40,7 +45,7 @@ class PageViewModel constructor(
     }
 
     init {
-        fetchPageData()
+        // fetchPageData()
     }
 
     fun handleIntent(intent: PageIntent) {
@@ -78,11 +83,7 @@ class PageViewModel constructor(
                 when (val element = intent.element) {
                     is ElementUI.Link -> {
                         element.relatedPage?.let { page ->
-
-//                            postEffect(NavigateEffect(
-//                                RootScreen.PageScreen.withArguments("pageId" to page.id)
-//                            ))
-
+                            postEffect(NavigateEffect(PageScreen(initialPageId = page.id)))
                         }
                     }
 
@@ -200,7 +201,7 @@ class PageViewModel constructor(
 
     private fun fetchPageData() {
         val fetchPageFlow = if (pageId != null) {
-            editorUseCase.fetchPageById(pageId)
+            editorUseCase.fetchPageById(pageId!!)
         } else {
             editorUseCase.fetchStartPage()
         }
