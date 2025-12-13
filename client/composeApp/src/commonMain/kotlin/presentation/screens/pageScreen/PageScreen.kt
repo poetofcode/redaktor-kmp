@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mikepenz.markdown.m3.Markdown
 import domain.model.Page
 import presentation.composables.DragDropList
 import presentation.model.ActionUI
@@ -301,13 +302,23 @@ class PageScreen(
                             focusRequester.requestFocus()
                         }
                     } else {
-                        Text(
-                            text = element.text,
+
+                        Markdown(
+                            content = element.text,
                             modifier = Modifier.padding(
                                 horizontal = paddHor,
                                 vertical = paddingVert
                             )
                         )
+
+
+//                        Text(
+//                            text = element.text,
+//                            modifier = Modifier.padding(
+//                                horizontal = paddHor,
+//                                vertical = paddingVert
+//                            )
+//                        )
                     }
                 }
 
