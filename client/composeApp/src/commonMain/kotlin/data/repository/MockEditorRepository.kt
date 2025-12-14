@@ -117,6 +117,10 @@ internal class MockEditorRepository : EditorRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun reorderPages(firstPageId: String, secondPageId: String) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun createPage() {
         TODO("Not yet implemented")
     }

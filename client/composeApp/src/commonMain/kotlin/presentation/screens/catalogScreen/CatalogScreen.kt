@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import presentation.composables.DragDropList
 import presentation.model.PageUI
 import presentation.navigation.BaseScreen
 import specific.BackHandler
@@ -71,8 +72,97 @@ class CatalogScreen(
     }
 
     @Composable
+    private fun CatalogItem(
+        page: PageUI,
+        focusRequester: FocusRequester,
+    ) {
+        Column(Modifier.then(
+            if (!state.isEditing) {
+                Modifier.clickable {
+                    offerIntent(CatalogIntent.OnPageClick(pageId = page.id))
+                }
+            } else Modifier
+        )
+        ) {
+            Row(
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                if (state.isEditing && state.editablePage!!.id == page.id) {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Transparent)
+                            .focusRequester(focusRequester),
+                        value = state.editablePage?.title.orEmpty(),
+                        onValueChange = {
+                            offerIntent(
+                                CatalogIntent.OnEditablePageChanged(
+                                    newPage = state.editablePage?.copy(title = it)!!
+                                )
+                            )
+                        })
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                    }
+                } else {
+                    if (!page.isNew) {
+                        Text(
+                            text = page.title,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(),
+                        )
+                    } else {
+                        CompositionLocalProvider(LocalContentColor provides Color.LightGray) {
+                            Text(
+                                text = "Введите название",
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(),
+                                fontStyle = FontStyle.Italic,
+                            )
+                        }
+                    }
+                    // Spacer(Modifier.weight(1f))
+                    ActionList(page = page)
+                }
+            }
+            HorizontalDivider(Modifier.fillMaxSize())
+        }
+    }
+
+    @Composable
     private fun PageList() {
         val focusRequester = remember { FocusRequester() }
+
+        DragDropList(
+            items = state.pages,
+            itemView = {
+                CatalogItem(it, focusRequester)
+            },
+            // contentPadding = PaddingValues(bottom = contentPaddingBottom),
+            onMove = { oldPos, newPos ->
+                offerIntent(
+                    CatalogIntent.OnReorderListElement(
+                        oldPosition = oldPos,
+                        newPosition = newPos
+                    )
+                )
+            },
+            onStartDragging = { itemIndex ->
+                offerIntent(CatalogIntent.OnStartDragging(itemIndex ?: return@DragDropList))
+            },
+            onStopDragging = {
+                offerIntent(CatalogIntent.OnFinishDragging)
+            },
+            isDraggable = true
+        )
+
+        /*
         LazyColumn {
             items(state.pages) { page ->
                 Column(Modifier.then(
@@ -134,6 +224,7 @@ class CatalogScreen(
                 }
             }
         }
+         */
     }
 
     @Composable
@@ -159,7 +250,8 @@ class CatalogScreen(
         imageVector: ImageVector,
         onClick: () -> Unit
     ) {
-        Box(modifier = modifier
+        Box(
+            modifier = modifier
             .clickable { onClick() }
             .border(width = 1.dp, color = Color.LightGray)
             .padding(5.dp)) {

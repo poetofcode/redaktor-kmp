@@ -134,6 +134,19 @@ class FileEditorRepository(
         saveAllData()
     }
 
+    override suspend fun reorderPages(firstPageId: String, secondPageId: String) {
+        val firstPage = dataOrDefault.pages.first { it.id == firstPageId }
+        val secondPage = dataOrDefault.pages.first { it.id == secondPageId }
+
+        dataOrDefault = dataOrDefault.copy(
+            pages = dataOrDefault.pages.swap(
+                dataOrDefault.pages.indexOf(firstPage),
+                dataOrDefault.pages.indexOf(secondPage)
+            )
+        )
+        saveAllData()
+    }
+
     override suspend fun createPage() {
         val newPage = Page.createEmptyPage().copy(
             id = createUUID()
