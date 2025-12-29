@@ -220,9 +220,18 @@ class PageViewModel constructor(
             .launchIn(viewModelScope)
     }
 
+    private fun deleteElement(element: ElementUI) {
+        editorUseCase.deleteElement(state.value.pageId ?: return, element.id)
+            .onEach { fetchPageData() }
+            .catch { e -> e.printStackTrace() }
+            .launchIn(viewModelScope)
+    }
+
     private fun handleActionClick(element: ElementUI, action: ActionUI) {
         when (action) {
-            ActionUI.Delete -> { /* TODO */
+            ActionUI.Delete -> {
+                println("On delete click, action: $action")
+                deleteElement(element)
             }
             ActionUI.Edit -> {
                 reduce {

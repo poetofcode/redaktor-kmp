@@ -71,6 +71,9 @@ class CatalogViewModel constructor(
 
             is CatalogIntent.OnDeleteClick -> {
                 // TODO implememnt
+
+
+
             }
 
             is CatalogIntent.OnEditClick -> {

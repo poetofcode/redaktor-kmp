@@ -102,8 +102,19 @@ class FileEditorRepository(
     }
 
     override suspend fun deleteElement(pageId: String, elementId: String) {
-        // TODO
-
+        var foundPage = dataOrDefault.pages.firstOrNull {
+            it.id == pageId
+        } ?: throw Exception("Page with id{$pageId} not found")
+        val newElements = foundPage.elements.filterNot { it.id == elementId }
+        dataOrDefault = dataOrDefault.copy(
+            pages = dataOrDefault.pages.map { page ->
+                if (page.id == foundPage.id) {
+                    foundPage.copy(elements = newElements)
+                } else {
+                    page
+                }
+            }
+        )
         saveAllData()
     }
 
