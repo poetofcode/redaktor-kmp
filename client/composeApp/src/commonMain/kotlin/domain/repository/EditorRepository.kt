@@ -17,6 +17,8 @@ interface EditorRepository {
 
     suspend fun deleteElement(pageId: String, elementId: String)
 
+    suspend fun deletePage(pageId: String)
+
     suspend fun reorderElements(pageId: String, firstElementId: String, secondElementId: String)
 
     suspend fun reorderPages(firstPageId: String, secondPageId: String)

@@ -230,7 +230,6 @@ class PageViewModel constructor(
     private fun handleActionClick(element: ElementUI, action: ActionUI) {
         when (action) {
             ActionUI.Delete -> {
-                println("On delete click, action: $action")
                 deleteElement(element)
             }
             ActionUI.Edit -> {

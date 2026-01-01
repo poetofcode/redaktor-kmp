@@ -51,4 +51,9 @@ class EditorUseCase constructor(
         repository.deleteElement(pageId, elementId)
         emit(Unit)
     }.flowOnDefaultContext()
+
+    fun deletePage(pageId: String) : CommonFlow<Unit> = flow<Unit> {
+        repository.deletePage(pageId)
+        emit(Unit)
+    }.flowOnDefaultContext()
 }

@@ -118,6 +118,13 @@ class FileEditorRepository(
         saveAllData()
     }
 
+    override suspend fun deletePage(pageId: String) {
+        dataOrDefault = dataOrDefault.copy(
+            pages = dataOrDefault.pages.filterNot { it.id == pageId }
+        )
+        saveAllData()
+    }
+
     override suspend fun reorderElements(
         pageId: String,
         firstElementId: String,

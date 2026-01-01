@@ -113,6 +113,10 @@ internal class MockEditorRepository : EditorRepository {
 
     }
 
+    override suspend fun deletePage(pageId: String) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun reorderElements(pageId: String, firstElementId: String, secondElementId: String) {
         TODO("Not yet implemented")
     }

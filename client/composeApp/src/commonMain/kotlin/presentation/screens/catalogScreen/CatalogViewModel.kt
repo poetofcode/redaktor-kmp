@@ -38,8 +38,6 @@ class CatalogViewModel constructor(
     private fun fetchData() {
         editorUseCase.fetchPages()
             .onEach { pages ->
-                println("mylog Pages: ${pages}")
-
                 reduce {
                     copy(
                         pages = pages.map { page ->
@@ -70,10 +68,7 @@ class CatalogViewModel constructor(
             }
 
             is CatalogIntent.OnDeleteClick -> {
-                // TODO implememnt
-
-
-
+                deletePage(intent.pageId)
             }
 
             is CatalogIntent.OnEditClick -> {
@@ -133,6 +128,16 @@ class CatalogViewModel constructor(
                 reduce { copy(draggableIndex = intent.itemIndex) }
             }
         }
+    }
+
+    private fun deletePage(pageId: String) {
+        editorUseCase.deletePage(pageId)
+            .onEach {
+                fetchData()
+                postSharedEvent(OnPagesUpdatedEvent)
+            }
+            .catch { it.printStackTrace() }
+            .launchIn(viewModelScope)
     }
 
     override fun obtainSharedEvent(event: SharedEvent) {
