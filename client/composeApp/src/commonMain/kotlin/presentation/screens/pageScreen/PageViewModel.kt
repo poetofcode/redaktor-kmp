@@ -190,7 +190,9 @@ class PageViewModel constructor(
         editorUseCase.createOrUpdateElement(state.value.pageId ?: return, element)
             .onEach {
                 fetchPageData()
-                postSideEffect(OnScrollToNewElementEffect(elementPosition = state.value.elements.size - 1))
+                postSideEffect(OnScrollToNewElementEffect(
+                    elementPosition = state.value.elements.size - 1
+                ))
 
                 // TODO открывать сразу экран редактирования элемента после доабвления
 //                reduce {

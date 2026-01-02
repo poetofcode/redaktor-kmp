@@ -85,7 +85,7 @@ class PageScreen(
     val state get() = viewModel.state.value
 
     private var lazyListState: LazyListState? = null
-    private var isListNotDraggable: MutableState<Boolean> = mutableStateOf(true)
+    private var isListNotDraggable: MutableState<Boolean> = mutableStateOf(false)
     private lateinit var scope: CoroutineScope
 
     override val isMenuVisible: Boolean = false
