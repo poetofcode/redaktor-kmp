@@ -1,17 +1,17 @@
 package presentation.screens.pageScreen
 
-import domain.usecase.EditorUseCase
+import data.utils.swap
 import domain.model.Element
 import domain.model.LinkElement
 import domain.model.Page
 import domain.model.TextElement
-import data.utils.swap
-import presentation.screens.pageScreen.misc.ElementType
+import domain.usecase.EditorUseCase
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import presentation.base.BaseViewModel
 import presentation.base.postEffect
+import presentation.base.postSideEffect
 import presentation.model.ActionUI
 import presentation.model.ElementUI
 import presentation.model.PageMode
@@ -20,8 +20,10 @@ import presentation.model.shared.OnPagePickedEvent
 import presentation.model.shared.OnPagesUpdatedEvent
 import presentation.navigation.NavigateBackEffect
 import presentation.navigation.NavigateEffect
+import presentation.navigation.OnScrollToNewElementEffect
 import presentation.navigation.SharedEvent
 import presentation.screens.catalogScreen.CatalogScreen
+import presentation.screens.pageScreen.misc.ElementType
 
 class PageViewModel constructor(
     val editorUseCase: EditorUseCase,
@@ -188,6 +190,8 @@ class PageViewModel constructor(
         editorUseCase.createOrUpdateElement(state.value.pageId ?: return, element)
             .onEach {
                 fetchPageData()
+                postSideEffect(OnScrollToNewElementEffect(elementPosition = state.value.elements.size - 1))
+
                 // TODO открывать сразу экран редактирования элемента после доабвления
 //                reduce {
 //                    val elementUi = elements.firstOrNull { it.id == element.id }

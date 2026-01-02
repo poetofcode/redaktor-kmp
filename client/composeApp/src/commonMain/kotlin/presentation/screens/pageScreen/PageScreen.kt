@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,30 +37,40 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
-import domain.model.Page
+import com.mikepenz.markdown.m3.markdownTypography
+import com.mikepenz.markdown.model.MarkdownTypography
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import presentation.composables.DragDropList
 import presentation.model.ActionUI
 import presentation.model.ElementUI
 import presentation.model.PageMode
 import presentation.navigation.BaseScreen
 import presentation.navigation.HideBottomSheetEffect
+import presentation.navigation.OnScrollToNewElementEffect
 import presentation.navigation.ShowModalBottomSheetEffect
+import presentation.navigation.SideEffect
 import presentation.navigation.postSideEffect
 import presentation.screens.pageScreen.misc.ElementType
 import specific.BackHandler
@@ -70,10 +84,16 @@ class PageScreen(
 
     val state get() = viewModel.state.value
 
+    private var lazyListState: LazyListState? = null
+    private var isListNotDraggable: MutableState<Boolean> = mutableStateOf(true)
+    private lateinit var scope: CoroutineScope
+
     override val isMenuVisible: Boolean = false
 
     @Composable
     override fun Content() {
+        scope = rememberCoroutineScope()
+
         BackHandler {
             when (state.mode) {
                 is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
@@ -105,6 +125,20 @@ class PageScreen(
             }
         )
 
+    }
+
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        when (sideEffect) {
+            is OnScrollToNewElementEffect -> {
+                scope.launch {
+                    if (sideEffect.elementPosition < 0) return@launch
+                    lazyListState?.animateScrollToItem(sideEffect.elementPosition)
+                }
+            }
+        }
     }
 
     @Composable
@@ -168,7 +202,6 @@ class PageScreen(
             Box(Modifier.fillMaxSize()) {
                 val floatingToolbarHeight = 50.dp
                 ElementList(
-                    contentPaddingBottom = floatingToolbarHeight,
                     focusRequester = focusRequester
                 )
                 FloatingToolbar(
@@ -238,13 +271,17 @@ class PageScreen(
     }
 
     @Composable
-    private fun ElementList(contentPaddingBottom: Dp, focusRequester: FocusRequester) {
+    private fun ElementList(focusRequester: FocusRequester) {
+        lazyListState = rememberLazyListState()
+
+        val bottomExtraSpace = 300.dp
         DragDropList(
+            lazyListState = lazyListState ?: return,
             items = state.elements,
             itemView = {
                 ElementItem(it, focusRequester)
             },
-            contentPadding = PaddingValues(bottom = contentPaddingBottom),
+            contentPadding = PaddingValues(bottom = bottomExtraSpace),
             onMove = { oldPos, newPos ->
                 offerIntent(
                     PageIntent.OnReorderListElement(
@@ -259,12 +296,15 @@ class PageScreen(
             onStopDragging = {
                 offerIntent(PageIntent.OnFinishDragging)
             },
-            isDraggable = state.mode is PageMode.Select
+            isDraggable = state.mode is PageMode.Select && !isListNotDraggable.value
         )
     }
 
     @Composable
     private fun ElementItem(element: ElementUI, focusRequester: FocusRequester) {
+        val bringIntoViewRequester = remember { BringIntoViewRequester() }
+        val coroutineScope = rememberCoroutineScope()
+
         val paddingVert = 20.dp
         val paddHor = 16.dp
         val editableElement: ElementUI? = (state.mode as? PageMode.Edit)?.element
@@ -273,18 +313,13 @@ class PageScreen(
                 .then(
                     if (state.isDragging) {
                         Modifier
-                            .border(
-                                width = 1.dp,
-                                color = Color.Black,
-                                shape = RoundedCornerShape(5.dp)
-                            )
-                            .then(
-                                if (element.id == state.elements[state.draggableIndex!!].id) {
-                                    Modifier.background(Color.Yellow)
-                                } else Modifier
-                            )
+                            .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(5.dp))
+                            .then(if (element.id == state.elements.getOrNull(state.draggableIndex!!)?.id) {
+                                Modifier.background(Color.Yellow)
+                            } else Modifier)
                     } else Modifier
                 )
+                .bringIntoViewRequester(bringIntoViewRequester)
         ) {
             when (element) {
                 is ElementUI.Text -> {
@@ -293,80 +328,79 @@ class PageScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(Color.Transparent)
-                                .focusRequester(focusRequester),
+                                .focusRequester(focusRequester)
+                                .onFocusEvent {
+                                    if (it.isFocused) {
+                                        coroutineScope.launch {
+                                            delay(200)
+                                            bringIntoViewRequester.bringIntoView()
+                                        }
+                                    }
+                                },
                             value = editableElement.text,
                             onValueChange = {
                                 offerIntent(
                                     PageIntent.OnEditableElementChanged(editableElement.copy(text = it))
                                 )
                             })
+                        Spacer(Modifier.size(floatingToolbarHeight))        // Extra space
                         LaunchedEffect(Unit) {
                             focusRequester.requestFocus()
                         }
                     } else {
+                        val title = element.text.takeIf { it.isNotBlank() } ?: "Введите текст"
+                        val color = if (element.text.isNotBlank()) MaterialTheme.colorScheme.onSurface else Color.Gray
+                        val fontStyle = if (element.text.isNotBlank()) FontStyle.Normal else FontStyle.Italic
+                        CompositionLocalProvider(LocalContentColor provides color) {
+                            Markdown(
+                                typography = markdownTypography(text = MaterialTheme.typography.bodyLarge.copy(
 
-                        Markdown(
-                            content = element.text,
-                            modifier = Modifier.padding(
-                                horizontal = paddHor,
-                                vertical = paddingVert
+                                )),
+                                content = title,
+                                modifier = Modifier.padding(
+                                    horizontal = paddHor,
+                                    vertical = paddingVert
+                                )
                             )
-                        )
-
-
-//                        Text(
-//                            text = element.text,
-//                            modifier = Modifier.padding(
-//                                horizontal = paddHor,
-//                                vertical = paddingVert
-//                            )
-//                        )
+                        }
                     }
                 }
 
                 is ElementUI.Link -> {
-                    val linkTitle =
-                        element.relatedPage?.title?.takeIf { it.isNotBlank() } ?: "без названия"
+                    val linkTitle = element.relatedPage.run {
+                        val relatedPage = this
+                        if (relatedPage == null) {
+                            "Ссылка не привязана"
+                        } else if (relatedPage.title.isNotBlank()) {
+                            relatedPage.title
+                        } else "Страница без названия"
+                    }
                     if (editableElement is ElementUI.Link && editableElement.id == element.id) {
-                        Column(Modifier.fillMaxWidth()) {
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .focusRequester(focusRequester),
-                                value = editableElement.text,
-                                onValueChange = {
-                                    offerIntent(
-                                        PageIntent.OnEditableElementChanged(
-                                            editableElement.copy(text = it)
-                                        )
-                                    )
-                                })
-
-                            Row(Modifier.padding(10.dp)) {
-                                val color =
-                                    if (element.isBound) Color(0, 200, 0, 255) else Color.Gray
-                                Spacer(modifier = Modifier.weight(1f))
-                                Icon(
-                                    modifier = Modifier.size(18.dp),
-                                    imageVector = if (element.isBound) Icons.Filled.Link else Icons.Filled.LinkOff,
-                                    contentDescription = null,
-                                    tint = color,
-                                )
-                                Text(
-                                    text = if (element.isBound) {
-                                        "Ссылка установлена ($linkTitle)"
-                                    } else {
-                                        "Ссылка не задана"
-                                    },
-                                    modifier = Modifier.padding(start = 10.dp),
-                                    fontStyle = FontStyle.Italic,
-                                    color = color,
-                                )
-                            }
+                        Row(Modifier
+                            .fillMaxWidth()
+                            .height(70.dp)
+                            .padding(10.dp)
+                            .border(1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(5.dp))
+                            .padding(10.dp)) {
+                            val color = if (element.isBound) Color(0, 200, 0, 255) else Color.Gray
+                            Icon(
+                                modifier = Modifier.size(18.dp),
+                                imageVector = if (element.isBound) Icons.Filled.Link else Icons.Filled.LinkOff,
+                                contentDescription = null,
+                                tint = color,
+                            )
+                            Text(
+                                text = if (element.isBound) {
+                                    linkTitle
+                                } else {
+                                    "Ссылка не привязана"
+                                },
+                                modifier = Modifier.padding(start = 10.dp),
+                                fontStyle = FontStyle.Italic,
+                                color = color,
+                            )
                         }
-                        LaunchedEffect(Unit) {
-                            focusRequester.requestFocus()
-                        }
+                        Spacer(Modifier.size(floatingToolbarHeight))        // Extra space
                     } else {
                         Row(
                             Modifier
@@ -378,9 +412,6 @@ class PageScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = element.text,
-                                )
                                 CompositionLocalProvider(LocalContentColor provides Color.LightGray) {
                                     Text(
                                         text = linkTitle,
@@ -545,7 +576,8 @@ class PageScreen(
     }
 
     companion object {
-        val elementTypes = listOf(ElementType.TEXT, ElementType.LINK)
+        private val elementTypes = listOf(ElementType.TEXT, ElementType.LINK)
+        private val floatingToolbarHeight = 50.dp
     }
 
 }

@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun <T> DragDropList(
+    lazyListState: LazyListState = rememberLazyListState(),
     items: List<T>,
     itemView: @Composable (T) -> Unit,
     onMove: (Int, Int) -> Unit,
@@ -40,7 +41,7 @@ fun <T> DragDropList(
 
     var overscrollJob by remember { mutableStateOf<Job?>(null) }
 
-    val dragDropListState = rememberDragDropListState(onMove = onMove)
+    val dragDropListState = rememberDragDropListState(lazyListState = lazyListState, onMove = onMove)
 
     LazyColumn(
         modifier = modifier

@@ -38,6 +38,9 @@ data class ShowModalBottomSheetEffect(
 
 object HideBottomSheetEffect : SideEffect
 
+data class OnScrollToNewElementEffect(val elementPosition: Int) : SideEffect
+
+
 /* SHARED EVENTS */
 
 interface SharedEvent

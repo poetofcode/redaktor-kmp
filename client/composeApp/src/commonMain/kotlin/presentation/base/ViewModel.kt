@@ -115,12 +115,14 @@ fun BaseViewModel<*>.postEffect(effect: Effect) {
 }
 fun BaseViewModel<*>.postSideEffect(effect: SideEffect) {
     viewModelScope.launch {
-        sideEffectFlow.tryEmit(effect)
+        sideEffectFlow.emit(effect)
     }
 }
 
 fun BaseViewModel<*>.postSharedEvent(event: SharedEvent) {
-    SharedMemory.eventFlow.tryEmit(event)
+    viewModelScope.launch {
+        SharedMemory.eventFlow.emit(event)
+    }
 }
 
 fun findNavigatorInfoByTag(navigators: List<NavigatorInfo>, tag: NavigatorTag): NavigatorInfo {
