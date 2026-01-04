@@ -1,7 +1,7 @@
 package presentation.model
 
 sealed class PageMode {
-    object View : PageMode()
-    object Select : PageMode()
+    data object View : PageMode()
+    data object Select : PageMode()
     data class Edit(val element: ElementUI) : PageMode()
 }

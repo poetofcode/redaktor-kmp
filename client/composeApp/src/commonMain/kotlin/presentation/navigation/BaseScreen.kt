@@ -1,12 +1,19 @@
 package presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +60,12 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
     private val snackState = mutableStateOf<SnackState>(SnackState())
     private var snackHidingJob: Job? = null
 
+    protected var overlayState = mutableStateOf(OverlayState())
+
+    fun reduceOverlayState(cb: OverlayState.() -> OverlayState) {
+        overlayState.value = cb(overlayState.value)
+    }
+
     open fun handleSideEffect(sideEffect: SideEffect) {
         // Handle custom side effects
     }
@@ -88,7 +101,46 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
 
         Box(modifier = Modifier.fillMaxSize()) {
             Content()
+            OverlayContent()
             Snack(modifier = Modifier.align(Alignment.BottomCenter))
+        }
+    }
+
+    @Composable
+    fun OverlayContent() {
+        val state = overlayState.value
+
+        if (state.isVisible) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+            )
+        }
+        AnimatedVisibility(
+            visible = state.isVisible,
+            enter = slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ) + fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        shape = ShapeDefaults.Medium
+                    )
+            ) {
+                state.content()
+            }
         }
     }
 
@@ -169,6 +221,23 @@ fun BaseScreen<*>.collectSideEffects() {
                     )
                 }
             }
+
+            is ShowOverlayEffect -> {
+                reduceOverlayState {
+                    copy(
+                        isVisible = true,
+                        content = effect.content
+                    )
+                }
+            }
+
+            is HideOverlayEffect -> {
+                reduceOverlayState {
+                    copy(
+                        isVisible = false
+                    )
+                }
+            }
         }
 
         handleSideEffect(effect)
@@ -185,3 +254,12 @@ data class SnackState(
     val isVisible: Boolean = false,
     val delayed: Boolean = false,
 )
+
+data class OverlayState(
+    val content: @Composable () -> Unit = emptyContent(),
+    val isVisible: Boolean = false,
+) {
+    companion object {
+        fun emptyContent() = @Composable {}
+    }
+}

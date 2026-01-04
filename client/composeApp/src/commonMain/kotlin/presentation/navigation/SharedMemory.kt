@@ -36,10 +36,15 @@ data class ShowModalBottomSheetEffect(
     val content: @Composable () -> Unit
 ) : SideEffect
 
-object HideBottomSheetEffect : SideEffect
+data object HideBottomSheetEffect : SideEffect
 
 data class OnScrollToNewElementEffect(val elementPosition: Int) : SideEffect
 
+data class ShowOverlayEffect(
+    val content: @Composable () -> Unit
+) : SideEffect
+
+data object HideOverlayEffect : SideEffect
 
 /* SHARED EVENTS */
 

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -90,6 +92,7 @@ fun App(config: Config) {
             }
 
             AppLayout(
+                modifier = Modifier.fillMaxSize().imePadding(),
                 deviceType = config.deviceType,
                 menu = Menu(
                     tabs = Tabs.entries,
@@ -241,7 +244,7 @@ fun ModalBottomSheet() {
 
     if (localMainAppState.bottomSheetState.value.isVisible) {
         FlexibleBottomSheet(
-            modifier = Modifier,
+            modifier = Modifier.imePadding(),
             sheetState = sheetState,
             containerColor = Color.White,
             scrimColor = Color.Black.copy(alpha = 0.3f),
@@ -251,7 +254,7 @@ fun ModalBottomSheet() {
                         isVisible = false
                     )
             },
-            windowInsets = WindowInsets(0, 0, 0, 0)
+            windowInsets = WindowInsets.ime
         ) {
             localMainAppState.bottomSheetState.value.content()
         }
