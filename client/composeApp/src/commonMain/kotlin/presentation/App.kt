@@ -193,8 +193,7 @@ fun AppLayout(
             if (isMenuVisible) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray),
+                        .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
