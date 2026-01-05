@@ -183,9 +183,8 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
 
     @Composable
     fun AboutApp(modifier: Modifier = Modifier) {
-        /*
-        val versionName = BuildConfig.VERSION_NAME
-        val versionCode = BuildConfig.VERSION_CODE
+        val versionName = "0.1" // BuildConfig.VERSION_NAME
+        val versionCode = 1 // BuildConfig.VERSION_CODE
         val githubLink = "https://github.com/poetofcode/redaktor"
         Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
             // App version
@@ -199,20 +198,19 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                 )
             }
 
-            // Github link
-            Row(
-                modifier = Modifier.padding(top = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                ClickableItem(
-                    modifier = Modifier,
-                    text = "Страница на Github"
-                ) {
-                    viewModel.postSharedEvent(OnOpenExternalBrowserSharedEvent(githubLink))
-                }
-            }
+//            // Github link
+//            Row(
+//                modifier = Modifier.padding(top = 10.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//            ) {
+//                ClickableItem(
+//                    modifier = Modifier,
+//                    text = "Страница на Github"
+//                ) {
+//                    viewModel.postSharedEvent(OnOpenExternalBrowserSharedEvent(githubLink))
+//                }
+//            }
         }
-         */
     }
 
     @Composable
