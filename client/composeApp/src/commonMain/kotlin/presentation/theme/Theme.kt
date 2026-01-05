@@ -259,7 +259,7 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
-val LocalDarkMode = staticCompositionLocalOf<Boolean> { false }
+val LocalDarkMode = staticCompositionLocalOf<Boolean> { true }
 
 
 @Composable

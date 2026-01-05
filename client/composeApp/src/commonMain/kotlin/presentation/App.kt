@@ -3,6 +3,7 @@ package presentation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.skydoves.flexible.bottomsheet.material.FlexibleBottomSheet
 import com.skydoves.flexible.core.FlexibleSheetSize
 import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
+import data.utils.getValue
+import data.utils.setValue
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -49,6 +52,8 @@ import presentation.navigation.Navigator
 import presentation.navigation.NavigatorTag
 import presentation.screens.homeTabScreen.HomeTabScreen
 import presentation.screens.profileTabScreen.ProfileTabScreen
+import presentation.theme.AppTheme
+import presentation.theme.LocalDarkMode
 import redaktor.composeapp.generated.resources.Res
 import redaktor.composeapp.generated.resources.ic_home_24
 import redaktor.composeapp.generated.resources.ic_person_24
@@ -61,7 +66,8 @@ const val HORIZONTAL_ICON_SIZE = 60
 
 data class MainAppState(
     val isMenuVisible: MutableState<Boolean> = mutableStateOf(false),
-    val bottomSheetState: MutableState<BottomSheetState> = mutableStateOf(BottomSheetState())
+    val bottomSheetState: MutableState<BottomSheetState> = mutableStateOf(BottomSheetState()),
+    val isDarkMode: MutableState<Boolean> = mutableStateOf(false),  // isSystemInDarkTheme()
 ) {
     fun reduceBottomSheetState(cb: BottomSheetState.() -> BottomSheetState) {
         bottomSheetState.value = cb(bottomSheetState.value)
@@ -81,8 +87,22 @@ val LocalMainAppState = staticCompositionLocalOf<MainAppState> {
 @Composable
 @Preview
 fun App(config: Config) {
-    CompositionLocalProvider(LocalMainAppState provides MainAppState()) {
-        MaterialTheme {
+    val localMainAppState = LocalMainAppState.current
+    var isDarkMode: Boolean? by config.storage
+
+    val isSystemDarkTheme = isSystemInDarkTheme()
+    LaunchedEffect(Unit) {
+        localMainAppState.isDarkMode.value = isDarkMode ?: isSystemDarkTheme
+    }
+
+    CompositionLocalProvider(LocalDarkMode provides localMainAppState.isDarkMode.value) {
+        val localDarkMode = LocalDarkMode.current
+        LaunchedEffect(localDarkMode) {
+            if (isDarkMode != localDarkMode) {
+                isDarkMode = localDarkMode
+            }
+        }
+        AppTheme {
             val selectedTab = remember { mutableStateOf<Tabs>(HOME) }
             val navState = remember {
                 NavStateImpl(viewModelStore = config.viewModelStore).apply {

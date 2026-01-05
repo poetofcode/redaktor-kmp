@@ -159,8 +159,8 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
 
     @Composable
     fun CommonPrefs(modifier: Modifier = Modifier) {
-        // val localMainAppState = LocalMainAppState.current
-        var isDarkMode = false // localMainAppState.isDarkMode.value,
+        val localMainAppState = LocalMainAppState.current
+        val isDarkMode = localMainAppState.isDarkMode.value
 
         Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
             Row(
@@ -170,7 +170,7 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                 Switch(
                     checked = isDarkMode,
                     onCheckedChange = {
-                        isDarkMode = it
+                        localMainAppState.isDarkMode.value = it
                     }
                 )
                 Text(

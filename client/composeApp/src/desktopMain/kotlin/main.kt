@@ -1,4 +1,5 @@
 import androidx.compose.material.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,8 +23,8 @@ import data.repository.RepositoryFactoryImpl
 import data.repository.UseCaseFactoryImpl
 import data.service.NetworkingFactory
 import data.service.NetworkingFactoryImpl
-import data.utils.ContentBasedPersistentStorage
 import data.utils.FileContentProvider
+import data.utils.PersistentStorage
 import data.utils.ProfileStorageImpl
 import data.utils.getValue
 import data.utils.setValue
@@ -35,6 +36,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import presentation.App
+import presentation.LocalMainAppState
+import presentation.MainAppState
 import presentation.TrayIcon
 import presentation.base.Config
 import presentation.base.ViewModelStore
@@ -85,7 +88,7 @@ fun main() = application {
         )
     )
 
-    val storage = ContentBasedPersistentStorage(
+    val storage = PersistentStorage(
         FileContentProvider(
             fileName = "config.json",
             relativePath = "appcache",
@@ -194,13 +197,16 @@ fun main() = application {
             Text(text = "Restart required.")
         } else {
             if (initialized) {
-                App(
-                    Config(
+                CompositionLocalProvider(
+                    LocalMainAppState provides MainAppState()
+                ) {
+                    App(config = Config(
                         deviceType = Config.DeviceTypes.DESKTOP,
                         viewModelStore = vmStoreImpl,
                         repositoryFactory = repositoryFactory,
-                    )
-                )
+                        storage = storage,
+                    ))
+                }
 
             } else {
                 Text(text = "Downloading $downloading%")

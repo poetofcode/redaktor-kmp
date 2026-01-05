@@ -1,18 +1,25 @@
 package data.utils
 
+
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonEncoder
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.float
+import kotlinx.serialization.json.floatOrNull
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.intOrNull
 import java.io.File
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty
 
 /*
@@ -25,58 +32,21 @@ import kotlin.reflect.KProperty
 
 private val json = JsonProvider.json
 
-@Serializable
-data class PreferencesInfo(
-    val preferences: Map<String, @Serializable(with = AnySerializer::class) Any>? = null
-)
+@Serializer(forClass = ZonedDateTime::class)
+object DateSerializer : KSerializer<ZonedDateTime> {
+    private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
-object AnySerializer : KSerializer<Any> {
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Any")
-
-    override fun serialize(encoder: Encoder, value: Any) {
-        val jsonEncoder = encoder as JsonEncoder
-        val jsonElement = serializeAny(value)
-        jsonEncoder.encodeJsonElement(jsonElement)
+    override fun serialize(encoder: Encoder, value: ZonedDateTime) {
+        encoder.encodeString(value.format(formatter))
     }
 
-    private fun serializeAny(value: Any?): JsonElement = when (value) {
-        is Map<*, *> -> {
-            val mapContents = value.entries.associate { mapEntry ->
-                mapEntry.key.toString() to serializeAny(mapEntry.value)
-            }
-            JsonObject(mapContents)
-        }
-
-        is List<*> -> {
-            val arrayContents = value.map { listEntry -> serializeAny(listEntry) }
-            JsonArray(arrayContents)
-        }
-
-        is Number -> JsonPrimitive(value)
-        is Boolean -> JsonPrimitive(value)
-        else -> JsonPrimitive(value.toString())
-    }
-
-    override fun deserialize(decoder: Decoder): Any {
-        val jsonDecoder = decoder as JsonDecoder
-        val element = jsonDecoder.decodeJsonElement()
-
-        return deserializeJsonElement(element)
-    }
-
-    private fun deserializeJsonElement(element: JsonElement): Any = when (element) {
-        is JsonObject -> {
-            element.mapValues { deserializeJsonElement(it.value) }
-        }
-
-        is JsonArray -> {
-            element.map { deserializeJsonElement(it) }
-        }
-
-        is JsonPrimitive -> element.toString()
+    override fun deserialize(decoder: Decoder): ZonedDateTime {
+        val str = decoder.decodeString()
+        val instant = Instant.parse(str)
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault())
+        return zonedDateTime
     }
 }
-
 
 interface ContentProvider {
 
@@ -90,18 +60,15 @@ class FileContentProvider(
     val fileName: String,
     val relativePath: String,
 ) : ContentProvider {
-
     override fun provideContent(): String {
         val cachePath = File("./", relativePath)
         cachePath.mkdirs()
-        val file = File(cachePath, fileName)
-
-        if (!file.exists()) {
-            file.createNewFile()
-            return ""
+        val stream = File("$cachePath/$fileName").bufferedReader()
+        return try {
+            stream.use { it.readText() }
+        } catch (e: Throwable) {
+            String()
         }
-
-        return file.bufferedReader().use { it.readText() }
     }
 
     override fun saveContent(content: String) {
@@ -115,56 +82,83 @@ class FileContentProvider(
 
 }
 
-
-interface PersistentStorage {
-
-    fun save(key: String, param: Any)
-
-    fun fetch(key: String): Any?
-
-}
-
-class ContentBasedPersistentStorage(
+class PersistentStorage(
     private val contentProvider: ContentProvider
-) : PersistentStorage {
-
-    private val map: MutableMap<String, Any> by lazy {
+) {
+    private val _map: MutableMap<String, JsonElement> by lazy {
         val content = try {
             contentProvider.provideContent()
         } catch (e: Throwable) {
+            e.printStackTrace()
             "{}"
         }
-        val map = json.decodeFromString<PreferencesInfo>(content).preferences?.toMutableMap() ?: mutableMapOf()
-        map.toMap().toMutableMap()
+
+        val map = json.decodeFromString<Map<String, JsonElement>>(content)
+        map.toMutableMap()
     }
 
+    val map: Map<String, JsonElement> by lazy { _map }
 
-    override fun save(key: String, param: Any) {
-        map[key] = param
-
-        val str = json.encodeToString(PreferencesInfo(map))
+    fun save(key: String, param: Any) {
+        _map[key] = toJsonElement(param)
+        val str = json.encodeToString(_map)
         contentProvider.saveContent(str)
     }
 
-    override fun fetch(key: String): Any? {
-        return map[key]
+    fun deserializeAny(jsonElement: JsonElement): Any? {
+        return when (jsonElement) {
+            is JsonPrimitive -> when {
+                jsonElement.booleanOrNull != null -> jsonElement.boolean
+                jsonElement.intOrNull != null -> jsonElement.int
+                jsonElement.floatOrNull != null -> jsonElement.float
+                jsonElement.isString -> jsonElement.content
+                else -> null
+            }
+
+            is JsonArray -> jsonElement.map { deserializeAny(it) }
+
+            else -> null
+        }
+    }
+
+    inline fun <reified T : Any> fetch(key: String): T? {
+        val res = map.get(key) ?: return null
+        return (deserializeAny(res) as? T)
+    }
+
+    private fun toJsonElement(param: Any): JsonElement {
+        return when (param) {
+            is String -> JsonPrimitive(param)
+            is Int -> JsonPrimitive(param)
+            is Float -> JsonPrimitive(param)
+            is Boolean -> JsonPrimitive(param)
+
+            is List<*> -> {
+                val arrayContents = param.mapNotNull { listEntry ->
+                    toJsonElement(listEntry!!)
+                }
+                JsonArray(arrayContents)
+            }
+
+            else -> JsonPrimitive(param.toString())
+        }
     }
 }
 
 
-inline operator fun <reified T : Any> PersistentStorage.getValue(nothing: Any?, property: KProperty<*>): T? {
-    val properyName = property.name
-    val res = fetch(properyName)
-    return when (T::class) {
-        String::class -> res?.toString() as? T
-        Int::class -> res?.toString()?.toIntOrNull() as? T
-        Boolean::class -> res?.toString()?.toBooleanStrictOrNull() as? T
-
-        else -> null
-    }
+inline operator fun <reified T : Any> PersistentStorage.getValue(
+    nothing: Any?,
+    property: KProperty<*>
+): T? {
+    val propertyName = property.name
+    return (fetch(propertyName) as? T)
 }
 
-inline operator fun <reified T : Any> PersistentStorage.setValue(nothing: Any?, property: KProperty<*>, value: T?) {
+inline operator fun <reified T : Any> PersistentStorage.setValue(
+    nothing: Any?,
+    property: KProperty<*>,
+    value: T?
+) {
     val propertyName = property.name
     value?.let {
         this.save(propertyName, value)
