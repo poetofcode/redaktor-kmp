@@ -462,7 +462,7 @@ class PageScreen(
     private fun Toolbar() {
         Row(
             Modifier
-                .background(color = Color.Green)
+                .background(color = MaterialTheme.colorScheme.surfaceContainer)
                 .height(54.dp)
                 .fillMaxWidth()
         ) {
@@ -510,7 +510,7 @@ class PageScreen(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(horizontal = 20.dp),
-                color = Color.Black
+                color = AppColors.categoryTextColor.muted()
             )
         }
     }

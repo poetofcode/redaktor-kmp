@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import presentation.composables.DragDropList
 import presentation.model.PageUI
 import presentation.navigation.BaseScreen
+import presentation.theme.AppColors
+import presentation.theme.muted
 import specific.BackHandler
 
 class CatalogScreen(
@@ -266,7 +269,7 @@ class CatalogScreen(
     private fun Toolbar() {
         Row(
             Modifier
-                .background(color = Color.Green)
+                .background(color = MaterialTheme.colorScheme.surfaceContainer)
                 .height(54.dp)
                 .fillMaxWidth()
         ) {
@@ -275,7 +278,7 @@ class CatalogScreen(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(horizontal = 20.dp),
-                color = Color.Black
+                color = AppColors.categoryTextColor.muted()
             )
 
             Spacer(modifier = Modifier.weight(1f))
