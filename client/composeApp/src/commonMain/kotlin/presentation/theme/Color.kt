@@ -1,6 +1,57 @@
 package presentation.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+
+// Project specific colors
+//
+object AppColors {
+    val favoriteRedColor = Color(0xFFFB2727)
+    val iconMutedColor = Color.Gray
+    val sourceSolidColorDark = Color.Blue
+    val sourceSolidColorLight = Color.Cyan
+    val categorySolidColor = Color.Yellow.muted()
+    val categorySolidColorUnselected = Color.Yellow.copy(alpha = 0.2f)
+    val categoryTextColorLight = Color.Black
+    val categoryTextColorDark = Color.White
+
+    val contentBackgroundColor @Composable get() = MaterialTheme.colorScheme.surfaceContainer
+
+    val scrollBarHoverBackgroundColor
+        @Composable get() = if (LocalDarkMode.current)
+            Color.DarkGray
+        else
+            Color.LightGray
+
+    val scrollBarBackgroundColor @Composable get() = MaterialTheme.colorScheme.surfaceContainerHighest
+
+    val sourceSolidColor
+        @Composable get() = if (LocalDarkMode.current) {
+            sourceSolidColorDark
+        } else {
+            sourceSolidColorLight
+        }
+
+    val sourceSolidColorUnselected @Composable get() = sourceSolidColor.copy(alpha = 0.2f)
+
+    val categoryTextColor
+        @Composable get() = if (LocalDarkMode.current) {
+            categoryTextColorDark
+        } else {
+            categoryTextColorLight
+        }
+
+    val linkColor
+        @Composable get() = if (LocalDarkMode.current) {
+            sourceSolidColorLight
+        } else {
+            sourceSolidColorDark
+        }
+
+}
+
+fun Color.muted() = this.copy(alpha = 0.5f)
 
 val primaryLight = Color(0xFF415F91)
 val onPrimaryLight = Color(0xFFFFFFFF)
