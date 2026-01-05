@@ -74,6 +74,7 @@ import presentation.navigation.ShowModalBottomSheetEffect
 import presentation.navigation.SideEffect
 import presentation.navigation.postSideEffect
 import presentation.screens.pageScreen.misc.ElementType
+import presentation.theme.AppColors
 import presentation.theme.muted
 import specific.BackHandler
 
@@ -389,6 +390,7 @@ class PageScreen(
                                 Text(
                                     text = linkTitle,
                                     fontStyle = FontStyle.Italic,
+                                    color = AppColors.linkColor,
                                 )
                             }
                         }
