@@ -42,7 +42,6 @@ import presentation.TrayIcon
 import presentation.base.Config
 import presentation.base.ViewModelStore
 import presentation.factories.viewModelFactories
-import presentation.model.shared.OnReceivedTokenSharedEvent
 import presentation.model.shared.ShowDesktopNotificationSharedEvent
 import presentation.navigation.SharedMemory
 import java.io.File
@@ -197,9 +196,7 @@ fun main() = application {
             Text(text = "Restart required.")
         } else {
             if (initialized) {
-                CompositionLocalProvider(
-                    LocalMainAppState provides MainAppState()
-                ) {
+                CompositionLocalProvider(LocalMainAppState provides MainAppState()) {
                     App(config = Config(
                         deviceType = Config.DeviceTypes.DESKTOP,
                         viewModelStore = vmStoreImpl,

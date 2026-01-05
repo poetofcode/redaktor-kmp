@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -52,6 +53,7 @@ import presentation.navigation.Navigator
 import presentation.navigation.NavigatorTag
 import presentation.screens.homeTabScreen.HomeTabScreen
 import presentation.screens.profileTabScreen.ProfileTabScreen
+import presentation.theme.AppColors
 import presentation.theme.AppTheme
 import presentation.theme.LocalDarkMode
 import redaktor.composeapp.generated.resources.Res
@@ -176,7 +178,7 @@ fun AppLayout(
     menu: Menu,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {},
-) {
+) = Surface(color = AppColors.contentBackgroundColor) {
     val isMenuVisible = LocalMainAppState.current.isMenuVisible.value
 
     if (deviceType.isMobile) {
@@ -217,8 +219,7 @@ fun AppLayout(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(VERTICAL_PANEL_SIZE.dp)
-                    .background(Color.LightGray),
+                    .width(VERTICAL_PANEL_SIZE.dp),
             ) {
                 menu.tabs.forEach { tab ->
                     Box(
@@ -266,8 +267,8 @@ fun ModalBottomSheet() {
         FlexibleBottomSheet(
             modifier = Modifier.imePadding(),
             sheetState = sheetState,
-            containerColor = Color.White,
-            scrimColor = Color.Black.copy(alpha = 0.3f),
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrimColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.3f),
             onDismissRequest = {
                 localMainAppState.bottomSheetState.value =
                     localMainAppState.bottomSheetState.value.copy(

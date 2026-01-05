@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
@@ -13,11 +14,14 @@ import data.repository.RepositoryFactoryImpl
 import data.repository.UseCaseFactoryImpl
 import data.service.NetworkingFactory
 import data.service.NetworkingFactoryImpl
+import data.utils.PersistentStorage
 import data.utils.ProfileStorageImpl
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import presentation.App
+import presentation.LocalMainAppState
+import presentation.MainAppState
 import presentation.base.Config
 import presentation.base.ViewModelStore
 import presentation.factories.viewModelFactories
@@ -39,6 +43,13 @@ class MainActivity : ComponentActivity() {
     val networkingFactory: NetworkingFactory = NetworkingFactoryImpl(
         profileStorage,
         Config.DeviceTypes.ANDROID,
+    )
+
+    private val configStorage = PersistentStorage(
+        AndroidContentProvider(
+            fileName = "config.json",
+            context = this,
+        )
     )
 
     val editorContentProvider = AndroidContentProvider(
@@ -86,13 +97,16 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            App(
-                Config(
-                    deviceType = Config.DeviceTypes.ANDROID,
-                    viewModelStore = vmStoreImpl,
-                    repositoryFactory = repositoryFactory,
+            CompositionLocalProvider(LocalMainAppState provides MainAppState()) {
+                App(
+                    Config(
+                        deviceType = Config.DeviceTypes.ANDROID,
+                        viewModelStore = vmStoreImpl,
+                        repositoryFactory = repositoryFactory,
+                        storage = configStorage
+                    )
                 )
-            )
+            }
         }
 
         lifecycleScope.launch {
