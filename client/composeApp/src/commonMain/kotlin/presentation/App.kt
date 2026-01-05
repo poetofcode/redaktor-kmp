@@ -178,7 +178,7 @@ fun AppLayout(
     menu: Menu,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {},
-) = Surface(color = AppColors.contentBackgroundColor) {
+) = Surface {
     val isMenuVisible = LocalMainAppState.current.isMenuVisible.value
 
     if (deviceType.isMobile) {

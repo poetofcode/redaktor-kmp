@@ -34,6 +34,7 @@ import presentation.base.ViewModel
 import presentation.base.ViewModelStore
 import presentation.base.collectEffects
 import presentation.base.postSideEffect
+import presentation.theme.muted
 
 
 interface Screen<T : ViewModel<*>> {
@@ -115,7 +116,7 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.surface.muted()
                     )
             )
         }
@@ -135,7 +136,7 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
                     .fillMaxSize()
                     .padding(10.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        color = MaterialTheme.colorScheme.surface,
                         shape = ShapeDefaults.Medium
                     )
             ) {

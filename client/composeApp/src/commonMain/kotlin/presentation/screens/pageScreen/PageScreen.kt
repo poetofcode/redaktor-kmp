@@ -74,6 +74,7 @@ import presentation.navigation.ShowModalBottomSheetEffect
 import presentation.navigation.SideEffect
 import presentation.navigation.postSideEffect
 import presentation.screens.pageScreen.misc.ElementType
+import presentation.theme.muted
 import specific.BackHandler
 
 class PageScreen(
@@ -193,7 +194,7 @@ class PageScreen(
                 .fillMaxWidth()
                 .height(50.dp)
                 .padding(bottom = 8.dp, start = 16.dp, end = 16.dp)
-                .background(Color.LightGray.copy(alpha = 0.5f), shape = RoundedCornerShape(5.dp))
+                .background(Color.LightGray.muted(), shape = RoundedCornerShape(5.dp))
                 .clickable { onClick() },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
