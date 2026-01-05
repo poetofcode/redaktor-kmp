@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import presentation.base.ViewModel
 import presentation.base.ViewModelStore
 import presentation.base.collectEffects
 import presentation.base.postSideEffect
+import presentation.theme.AppColors
 import presentation.theme.muted
 
 
@@ -138,6 +140,11 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
                     .background(
                         color = MaterialTheme.colorScheme.surface,
                         shape = ShapeDefaults.Medium
+                    )
+                    .border(
+                        width = 1.dp,
+                        shape = ShapeDefaults.Medium,
+                        color = AppColors.categoryTextColor
                     )
             ) {
                 state.content()

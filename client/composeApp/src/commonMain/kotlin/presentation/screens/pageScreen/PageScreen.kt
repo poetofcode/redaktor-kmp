@@ -248,7 +248,7 @@ class PageScreen(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f)
-                            .background(Color.Cyan)
+                            .background(MaterialTheme.colorScheme.surfaceContainer)
                             .clickable { offerIntent(PageIntent.OnAddNewElementClick) }
                             .padding(5.dp),
                         horizontalArrangement = Arrangement.Center,
@@ -268,7 +268,7 @@ class PageScreen(
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(50.dp)
-                            .background(Color.Green)
+                            .background(AppColors.sourceSolidColor)
                             .clickable {
                                 onOptionButtonClick()
                             }
@@ -610,7 +610,7 @@ class PageScreen(
                 Row(
                     modifier
                         .fillMaxWidth()
-                        .background(Color.Cyan)
+                        .background(MaterialTheme.colorScheme.surfaceContainer)
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
