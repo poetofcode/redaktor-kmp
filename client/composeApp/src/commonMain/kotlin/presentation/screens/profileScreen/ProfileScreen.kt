@@ -322,8 +322,11 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                 ActionItem(action = it)
             }
             Spacer(modifier = Modifier.size(10.dp))
-            ActionButton(imageVector = Icons.Filled.Done) {
-                viewModel.onImportDbApply()
+
+            if (state.modifiedDBContent != state.lastDBContent) {
+                ActionButton(imageVector = Icons.Filled.Done) {
+                    viewModel.onImportDbApply()
+                }
             }
         }
     }
