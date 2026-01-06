@@ -125,6 +125,13 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
 
                 GroupedBox(
                     modifier = Modifier.padding(top = 16.dp),
+                    title = "Импорт базы данных"
+                ) {
+                    ImportDB()
+                }
+
+                GroupedBox(
+                    modifier = Modifier.padding(top = 16.dp),
                     title = "О приложении"
                 ) {
                     AboutApp()
@@ -210,6 +217,20 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
 //                    viewModel.postSharedEvent(OnOpenExternalBrowserSharedEvent(githubLink))
 //                }
 //            }
+        }
+    }
+
+    @Composable
+    fun ImportDB() {
+        Column(modifier = Modifier, horizontalAlignment = Alignment.Start) {
+            Button(onClick = {
+                TODO()
+            }) {
+                Text(
+                    text = "Меню экспорта",
+                    modifier = Modifier,
+                )
+            }
         }
     }
 
