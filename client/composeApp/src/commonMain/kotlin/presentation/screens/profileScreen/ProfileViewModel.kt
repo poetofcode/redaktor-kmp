@@ -8,6 +8,7 @@ import presentation.base.BaseViewModel
 import presentation.base.postEffect
 import presentation.base.postSharedEvent
 import presentation.base.postSideEffect
+import presentation.model.ActionUI
 import presentation.model.shared.OnQuitProfileSharedEvent
 import presentation.model.shared.OnReceivedTokenSharedEvent
 import presentation.navigation.HideBottomSheetEffect
@@ -86,6 +87,20 @@ class ProfileViewModel(
                 RegScreen(),
             )
         )
+    }
+
+    fun onImportDbApply() {
+
+    }
+
+    fun handleActionClick(action: ActionUI) {
+        when (action) {
+            ActionUI.Copy -> {
+
+            }
+
+            else -> Unit
+        }
     }
 
 

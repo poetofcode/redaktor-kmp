@@ -1,6 +1,7 @@
 package presentation.screens.profileScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,29 +13,52 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CopyAll
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import presentation.LocalMainAppState
 import presentation.Tabs
-import presentation.base.postSharedEvent
+import presentation.model.ActionUI
 import presentation.navigation.BaseScreen
 import presentation.navigation.HideBottomSheetEffect
+import presentation.navigation.HideOverlayEffect
 import presentation.navigation.ShowModalBottomSheetEffect
+import presentation.navigation.ShowOverlayEffect
 import presentation.navigation.postSideEffect
 import presentation.theme.AppColors
 import presentation.theme.AppTheme
@@ -51,6 +75,8 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
     override val isMenuVisible: Boolean = true
 
     val state get() = viewModel.state.value
+
+    val focusRequester = FocusRequester()
 
     @Composable
     override fun Content() {
@@ -224,13 +250,115 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
     fun ImportDB() {
         Column(modifier = Modifier, horizontalAlignment = Alignment.Start) {
             Button(onClick = {
-                TODO()
+                postSideEffect(ShowOverlayEffect { ImportDBMenu() })
             }) {
                 Text(
                     text = "Меню экспорта",
                     modifier = Modifier,
                 )
             }
+        }
+    }
+
+    @Composable
+    private fun ImportDBMenu() {
+        val bringIntoViewRequester = remember { BringIntoViewRequester() }
+        val coroutineScope = rememberCoroutineScope()
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.weight(1f).bringIntoViewRequester(bringIntoViewRequester)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent)
+                        // .verticalScroll(textScrollState)
+                        .focusRequester(focusRequester)
+                        .onFocusEvent {
+                            if (it.isFocused) {
+                                coroutineScope.launch {
+                                    delay(200)
+                                    bringIntoViewRequester.bringIntoView()
+                                }
+                            }
+                        },
+                    value = "TODO",
+                    maxLines = Int.MAX_VALUE,
+                    onValueChange = {
+//                        offerIntent(
+//                            PageIntent.OnEditableElementChanged(editableElement.copy(text = it))
+//                        )
+                        coroutineScope.launch {
+                            bringIntoViewRequester.bringIntoView()
+                        }
+                    })
+                Spacer(Modifier.size(floatingToolbarHeight))        // Extra space
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+            }
+
+            FloatingToolbar(modifier = Modifier)
+        }
+    }
+
+    @Composable
+    fun FloatingToolbar(modifier: Modifier) {
+        val actions: List<ActionUI> = listOf(
+            ActionUI.Copy
+        )
+        Row(
+            modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ActionButton(imageVector = Icons.Filled.Cancel) {
+                postSideEffect(HideOverlayEffect)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            // Row of dynamic actions
+            actions.forEach {
+                ActionItem(action = it)
+            }
+            Spacer(modifier = Modifier.size(10.dp))
+            ActionButton(imageVector = Icons.Filled.Done) {
+                viewModel.onImportDbApply()
+            }
+        }
+    }
+
+    @Composable
+    private fun ActionItem(action: ActionUI) {
+        ActionButton(
+            imageVector = when (action) {
+                ActionUI.Delete -> Icons.Filled.Delete
+                ActionUI.Edit -> Icons.Filled.Edit
+                ActionUI.BindLink -> Icons.Filled.Link
+                ActionUI.Copy -> Icons.Filled.CopyAll
+            }
+        ) {
+            viewModel.handleActionClick(action)
+        }
+    }
+
+    @Composable
+    private fun ActionButton(
+        modifier: Modifier = Modifier,
+        imageVector: ImageVector,
+        onClick: () -> Unit
+    ) {
+        Box(
+            modifier = modifier
+                .clickable { onClick() }
+                .border(width = 1.dp, color = Color.LightGray)
+                .padding(5.dp)) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = null
+            )
         }
     }
 
@@ -307,6 +435,10 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                 modifier = Modifier.align(Alignment.Center),
             )
         }
+    }
+
+    companion object {
+        private val floatingToolbarHeight = 50.dp
     }
 
 }

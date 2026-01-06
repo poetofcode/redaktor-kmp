@@ -250,6 +250,8 @@ class PageViewModel constructor(
             ActionUI.BindLink -> {
                 postEffect(NavigateEffect(CatalogScreen(isPicker = true)))
             }
+
+            ActionUI.Copy -> Unit
         }
     }
 

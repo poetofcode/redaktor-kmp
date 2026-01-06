@@ -4,6 +4,7 @@ sealed class ActionUI {
     object Edit : ActionUI()
     object Delete : ActionUI()
     object BindLink : ActionUI()
+    object Copy : ActionUI()
 
     companion object {
         val BY_DEFAULT: List<ActionUI> = emptyList()

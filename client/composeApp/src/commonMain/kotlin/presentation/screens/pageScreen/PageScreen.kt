@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
@@ -437,6 +438,7 @@ class PageScreen(
                 ActionUI.Delete -> Icons.Filled.Delete
                 ActionUI.Edit -> Icons.Filled.Edit
                 ActionUI.BindLink -> Icons.Filled.Link
+                ActionUI.Copy -> Icons.Filled.CopyAll
             }
         ) {
             offerIntent(PageIntent.OnActionClick(element, action))
@@ -535,8 +537,7 @@ class PageScreen(
                     is ElementUI.Text -> {
                         OutlinedTextField(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 56.dp, max = 400.dp)
+                                .fillMaxSize()
                                 .background(Color.Transparent)
                                 // .verticalScroll(textScrollState)
                                 .focusRequester(focusRequester)
@@ -605,7 +606,7 @@ class PageScreen(
     }
 
     @Composable
-    private fun FloatingToolbar(modifier: Modifier) {
+    fun FloatingToolbar(modifier: Modifier) {
         when (state.mode) {
             is PageMode.Edit -> {
                 val element = (state.mode as PageMode.Edit).element
