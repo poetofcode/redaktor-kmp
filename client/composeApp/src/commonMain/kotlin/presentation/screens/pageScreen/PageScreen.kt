@@ -78,16 +78,22 @@ import presentation.theme.AppColors
 import presentation.theme.muted
 import specific.BackHandler
 
+private var screenCounter = 0
+
 class PageScreen(
     val initialPageId: String
 ) : BaseScreen<PageViewModel>() {
 
     override val viewModel: PageViewModel
-        get() = viewModelStore.getViewModel<PageViewModel>()
+        get() = viewModelStore.getViewModel<PageViewModel>(screenId)
 
     val state get() = viewModel.state.value
 
-    private var lazyListState: LazyListState? = null
+    override val screenId by lazy {
+        "PageScreen#${initialPageId}#${screenCounter++}"
+    }
+
+    private val lazyListState: LazyListState = LazyListState()
     private var isListNotDraggable: MutableState<Boolean> = mutableStateOf(false)
     private lateinit var scope: CoroutineScope
 
@@ -107,7 +113,7 @@ class PageScreen(
             true
         }
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(screenId) {
             viewModel.pageId = initialPageId
         }
 
@@ -289,11 +295,9 @@ class PageScreen(
 
     @Composable
     private fun ElementList(focusRequester: FocusRequester) {
-        lazyListState = rememberLazyListState()
-
         val bottomExtraSpace = 300.dp
         DragDropList(
-            lazyListState = lazyListState ?: return,
+            lazyListState = lazyListState,
             items = state.elements,
             itemView = {
                 ElementItem(it, focusRequester)

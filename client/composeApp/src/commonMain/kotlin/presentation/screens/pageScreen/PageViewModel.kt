@@ -86,7 +86,9 @@ class PageViewModel constructor(
                 when (val element = intent.element) {
                     is ElementUI.Link -> {
                         element.relatedPage?.let { page ->
-                            postEffect(NavigateEffect(PageScreen(initialPageId = page.id)))
+                            postEffect(NavigateEffect(
+                                screen = PageScreen(initialPageId = page.id),
+                            ))
                         }
                     }
 
