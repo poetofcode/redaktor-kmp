@@ -15,6 +15,7 @@ import presentation.base.postSideEffect
 import presentation.model.ActionUI
 import presentation.model.shared.OnQuitProfileSharedEvent
 import presentation.model.shared.OnReceivedTokenSharedEvent
+import presentation.model.shared.OnRefreshDBSharedEvent
 import presentation.navigation.HideBottomSheetEffect
 import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
@@ -92,6 +93,10 @@ class ProfileViewModel(
                 fetchProfile()
                 postSideEffect(HideBottomSheetEffect)
             }
+
+            OnRefreshDBSharedEvent -> {
+                fetchDBContent()
+            }
         }
     }
 
@@ -116,7 +121,14 @@ class ProfileViewModel(
     }
 
     fun onImportDbApply() {
-
+        editorUseCase.saveDBContent(state.value.modifiedDBContent)
+            .onEach {
+                postSharedEvent(OnRefreshDBSharedEvent)
+            }
+            .catch {
+                postSideEffect(ShowSnackErrorEffect(it.toString()))
+            }
+            .launchIn(viewModelScope)
     }
 
     fun handleActionClick(action: ActionUI) {
@@ -134,6 +146,5 @@ class ProfileViewModel(
             modifiedDBContent = dbContentNew
         ) }
     }
-
 
 }
