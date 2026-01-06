@@ -47,17 +47,22 @@ import presentation.navigation.BaseScreen
 import presentation.theme.AppColors
 import presentation.theme.muted
 import specific.BackHandler
+import java.util.UUID
 
 class CatalogScreen(
     val isPicker: Boolean = false,
 ) : BaseScreen<CatalogViewModel>() {
 
     override val viewModel: CatalogViewModel
-        get() = viewModelStore.getViewModel<CatalogViewModel>()
+        get() = viewModelStore.getViewModel<CatalogViewModel>(screenId)
 
     val state get() = viewModel.state.value
 
     override val isMenuVisible: Boolean = true
+
+    override val screenId by lazy {
+        "CatalogScreen#${UUID.randomUUID()}"
+    }
 
     @Composable
     override fun Content() {

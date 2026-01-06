@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
@@ -77,8 +76,8 @@ import presentation.screens.pageScreen.misc.ElementType
 import presentation.theme.AppColors
 import presentation.theme.muted
 import specific.BackHandler
+import java.util.UUID
 
-private var screenCounter = 0
 
 class PageScreen(
     val initialPageId: String
@@ -90,7 +89,7 @@ class PageScreen(
     val state get() = viewModel.state.value
 
     override val screenId by lazy {
-        "PageScreen#${initialPageId}#${screenCounter++}"
+        "PageScreen#${initialPageId}#${UUID.randomUUID()}"
     }
 
     private val lazyListState: LazyListState = LazyListState()
