@@ -129,5 +129,11 @@ class ProfileViewModel(
         }
     }
 
+    fun onDBContentChanged(dbContentNew: String) {
+        reduce { copy(
+            modifiedDBContent = dbContentNew
+        ) }
+    }
+
 
 }

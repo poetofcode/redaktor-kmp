@@ -286,9 +286,7 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                     value = state.modifiedDBContent,
                     maxLines = Int.MAX_VALUE,
                     onValueChange = {
-//                        offerIntent(
-//                            PageIntent.OnEditableElementChanged(editableElement.copy(text = it))
-//                        )
+                        viewModel.onDBContentChanged(it)
                         coroutineScope.launch {
                             bringIntoViewRequester.bringIntoView()
                         }
