@@ -79,10 +79,10 @@ class ProfileTabViewModelFactory
 
 }
 
-class ProfileViewModelFactory(val profileRepository: ProfileRepository) :
+class ProfileViewModelFactory(val profileRepository: ProfileRepository, val editorUseCase: EditorUseCase) :
     ViewModelFactory<ProfileViewModel> {
     override fun createViewModel(): ProfileViewModel {
-        return ProfileViewModel(profileRepository)
+        return ProfileViewModel(profileRepository, editorUseCase)
     }
 
     override val vmTypeName: String
@@ -139,7 +139,7 @@ StartViewModelFactory(
         ),
 */
         ProfileTabViewModelFactory(),
-        ProfileViewModelFactory(profileRepository),
+        ProfileViewModelFactory(profileRepository, editorUseCase),
         AuthViewModelFactory(profileRepository),
         RegViewModelFactory(profileRepository),
         NotificationsViewModelFactory(profileRepository),

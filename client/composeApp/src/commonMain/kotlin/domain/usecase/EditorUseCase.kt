@@ -56,4 +56,15 @@ class EditorUseCase constructor(
         repository.deletePage(pageId)
         emit(Unit)
     }.flowOnDefaultContext()
+
+    fun loadDBContent(): CommonFlow<String> = flow<String> {
+        emit(repository.loadDBContent())
+    }
+
+    fun saveDBContent(dbContent: String) : CommonFlow<Unit> = flow<Unit> {
+        repository.saveDBContent(dbContent)
+        emit(Unit)
+    }
+
+
 }

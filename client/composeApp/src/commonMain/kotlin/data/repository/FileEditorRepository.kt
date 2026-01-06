@@ -191,6 +191,14 @@ class FileEditorRepository(
         saveAllData()
     }
 
+    override suspend fun loadDBContent(): String {
+        return dbProvider.provideContent()
+    }
+
+    override suspend fun saveDBContent(dbContent: String) {
+        dbProvider.saveContent(dbContent)
+    }
+
     private suspend fun createStartPage(): Page {
         val pageId = createUUID()
         val page = Page(

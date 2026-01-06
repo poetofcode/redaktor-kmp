@@ -133,4 +133,12 @@ internal class MockEditorRepository : EditorRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun loadDBContent(): String {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun saveDBContent(dbContent: String) {
+        TODO("Not yet implemented")
+    }
+
 }

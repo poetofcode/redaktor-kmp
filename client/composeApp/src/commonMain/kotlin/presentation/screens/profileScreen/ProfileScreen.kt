@@ -283,7 +283,7 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                                 }
                             }
                         },
-                    value = "TODO",
+                    value = state.modifiedDBContent,
                     maxLines = Int.MAX_VALUE,
                     onValueChange = {
 //                        offerIntent(

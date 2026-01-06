@@ -27,4 +27,8 @@ interface EditorRepository {
 
     suspend fun updatePage(pageId: String, title: String)
 
+    suspend fun loadDBContent() : String
+
+    suspend fun saveDBContent(dbContent: String)
+
 }

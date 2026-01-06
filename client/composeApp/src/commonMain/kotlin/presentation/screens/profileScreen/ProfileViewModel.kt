@@ -2,6 +2,10 @@ package presentation.screens.profileScreen
 
 import data.repository.ProfileRepository
 import domain.model.Profile
+import domain.usecase.EditorUseCase
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import presentation.base.BaseViewModel
@@ -14,21 +18,43 @@ import presentation.model.shared.OnReceivedTokenSharedEvent
 import presentation.navigation.HideBottomSheetEffect
 import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
+import presentation.navigation.ShowSnackErrorEffect
 import presentation.screens.authScreen.AuthScreen
 import presentation.screens.regScreen.RegScreen
 
 class ProfileViewModel(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val editorUseCase: EditorUseCase,
 ) : BaseViewModel<ProfileViewModel.State>() {
 
     data class State(
-        val profile: Profile? = null
+        val profile: Profile? = null,
+        val lastDBContent: String = "",
+        val modifiedDBContent: String = "",
     )
 
     init {
         fetchProfile()
 
         fetchNotifis()
+
+        fetchDBContent()
+    }
+
+    private fun fetchDBContent() {
+        editorUseCase.loadDBContent()
+            .onEach {
+                reduce {
+                    copy(
+                        lastDBContent = it,
+                        modifiedDBContent = it,
+                    )
+                }
+            }
+            .catch {
+                postSideEffect(ShowSnackErrorEffect(it.toString()))
+            }
+            .launchIn(viewModelScope)
     }
 
     fun fetchNotifis() {
