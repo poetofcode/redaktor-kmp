@@ -225,7 +225,7 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
 
     @Composable
     fun AboutApp(modifier: Modifier = Modifier) {
-        val versionName = "0.1" // BuildConfig.VERSION_NAME
+        val versionName = "1.0" // BuildConfig.VERSION_NAME
         val versionCode = 1 // BuildConfig.VERSION_CODE
         val githubLink = "https://github.com/poetofcode/redaktor"
         Column(modifier = modifier, horizontalAlignment = Alignment.Start) {

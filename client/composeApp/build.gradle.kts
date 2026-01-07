@@ -104,10 +104,19 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.poetofcode.redaktor"
+            packageName = "Redaktor"
             packageVersion = "1.0.0"
-        }
 
+            macOS {
+                iconFile.set(project.file("src/desktopMain/resources/ic_logo.icns"))
+            }
+            windows {
+                iconFile.set(project.file("src/desktopMain/resources/ic_logo.ico"))
+            }
+            linux {
+                iconFile.set(project.file("src/desktopMain/resources/ic_logo.png"))
+            }
+        }
         jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED") // recommended but not necessary
 

@@ -15,7 +15,7 @@ interface NetworkingFactory {
 class NetworkingFactoryImpl(
     private val profileStorage: ProfileStorage,
     private val deviceType: Config.DeviceTypes,
-    private val appVersion: String = "0.1",
+    private val appVersion: String = "1.0",
 ) : NetworkingFactory {
     
     override fun createHttpClient(): HttpClient {
