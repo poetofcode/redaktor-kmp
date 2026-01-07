@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cancel
@@ -26,7 +24,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -44,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import presentation.composables.DragDropList
 import presentation.model.PageUI
 import presentation.navigation.BaseScreen
+import presentation.navigation.HideBottomSheetEffect
+import presentation.navigation.ShowModalBottomSheetEffect
+import presentation.navigation.postSideEffect
 import presentation.theme.AppColors
 import presentation.theme.muted
 import specific.BackHandler
@@ -85,7 +88,8 @@ class CatalogScreen(
         page: PageUI,
         focusRequester: FocusRequester,
     ) {
-        Column(Modifier.then(
+        Column(
+            Modifier.then(
             if (!state.isEditing) {
                 Modifier.clickable {
                     offerIntent(CatalogIntent.OnPageClick(pageId = page.id))
@@ -249,7 +253,12 @@ class CatalogScreen(
                     offerIntent(CatalogIntent.OnEditClick(page.id))
                 }
                 ActionButton(imageVector = Icons.Filled.Delete) {
-                    offerIntent(CatalogIntent.OnDeleteClick(page.id))
+                    postSideEffect(ShowModalBottomSheetEffect {
+                        ConfirmDeleteContent(
+                            title = page.title,
+                            pageId = page.id
+                        )
+                    })
                 }
             }
         }
@@ -263,9 +272,9 @@ class CatalogScreen(
     ) {
         Box(
             modifier = modifier
-            .clickable { onClick() }
-            .border(width = 1.dp, color = Color.LightGray)
-            .padding(5.dp)) {
+                .clickable { onClick() }
+                .border(width = 1.dp, color = Color.LightGray)
+                .padding(5.dp)) {
             Icon(
                 imageVector = imageVector,
                 contentDescription = null
@@ -326,6 +335,45 @@ class CatalogScreen(
                             contentDescription = null
                         )
                     }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun ConfirmDeleteContent(title: String, pageId: String) = Surface {
+        Column(
+            Modifier.fillMaxWidth().padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = "Подтвердите удаление заметки:"
+            )
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 10.dp),
+                text = title.ifBlank { "Без названия" }
+            )
+            Row(
+                Modifier.padding(top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedButton(
+                    modifier = Modifier,
+                    onClick = {
+                        postSideEffect(HideBottomSheetEffect)
+                    }
+                ) {
+                    Text(text = "Отмена")
+                }
+                Button(
+                    modifier = Modifier,
+                    onClick = {
+                        viewModel.onConfirmDelete(pageId)
+                    }
+                ) {
+                    Text(text = "Удалить")
                 }
             }
         }

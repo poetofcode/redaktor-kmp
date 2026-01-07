@@ -8,10 +8,12 @@ import kotlinx.coroutines.flow.onEach
 import presentation.base.BaseViewModel
 import presentation.base.postEffect
 import presentation.base.postSharedEvent
+import presentation.base.postSideEffect
 import presentation.model.PageUI
 import presentation.model.shared.OnPagePickedEvent
 import presentation.model.shared.OnPagesUpdatedEvent
 import presentation.model.shared.OnRefreshDBSharedEvent
+import presentation.navigation.HideBottomSheetEffect
 import presentation.navigation.NavOptions
 import presentation.navigation.NavigateBackEffect
 import presentation.navigation.NavigateEffect
@@ -67,9 +69,7 @@ class CatalogViewModel constructor(
                 addNewPage()
             }
 
-            is CatalogIntent.OnDeleteClick -> {
-                deletePage(intent.pageId)
-            }
+            is CatalogIntent.OnDeleteClick -> Unit
 
             is CatalogIntent.OnEditClick -> {
                 val selectedPage = state.value.pages.first { it.id == intent.pageId }
@@ -192,6 +192,11 @@ class CatalogViewModel constructor(
     }
 
     override fun onInitState(): CatalogState = CatalogState()
+
+    fun onConfirmDelete(pageId: String) {
+        deletePage(pageId)
+        postSideEffect(HideBottomSheetEffect)
+    }
 
 }
 
