@@ -1,5 +1,6 @@
 package presentation.screens.profileScreen
 
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import data.repository.ProfileRepository
 import domain.model.Profile
@@ -133,7 +134,13 @@ class ProfileViewModel(
     fun handleActionClick(action: ActionUI) {
         when (action) {
             ActionUI.Copy -> {
-
+                reduce {
+                    copy(
+                        importTextFieldState = state.value.importTextFieldState.copy(
+                            selection = TextRange(0, state.value.modifiedDBContent.length)
+                        )
+                    )
+                }
             }
 
             else -> Unit
