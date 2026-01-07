@@ -2,3 +2,4 @@ sprout.sublime-workspace
 node_modules
 package-lock.json
 firebaseServiceAccountKey.json
+client/secret
