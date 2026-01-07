@@ -478,8 +478,6 @@ class PageScreen(
                 .height(54.dp)
                 .fillMaxWidth()
         ) {
-            // Icons.Filled.Edit
-
             val buttonParams: Pair<ImageVector, () -> Unit> = when (state.mode) {
                 PageMode.View -> {
                     Pair(Icons.Filled.Edit) {
@@ -501,7 +499,6 @@ class PageScreen(
                     is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
                     PageMode.Select -> offerIntent(PageIntent.OnFinishEditModeClick)
                     is PageMode.View -> viewModel.onBackPress()
-
                 }
             }) {
                 Icon(
@@ -509,6 +506,16 @@ class PageScreen(
                     contentDescription = "Back",
                 )
             }
+
+            Text(
+                text = state.pageTitle ?: "Redaktor",
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically)
+                    .padding(horizontal = 16.dp),
+                color = AppColors.categoryTextColor.muted(),
+                overflow = TextOverflow.Ellipsis,
+            )
 
             Box(
                 modifier = Modifier
@@ -522,17 +529,6 @@ class PageScreen(
                     contentDescription = "",
                 )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = state.pageTitle ?: "Redaktor",
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(horizontal = 20.dp),
-                color = AppColors.categoryTextColor.muted(),
-                overflow = TextOverflow.Ellipsis,
-            )
         }
     }
 
