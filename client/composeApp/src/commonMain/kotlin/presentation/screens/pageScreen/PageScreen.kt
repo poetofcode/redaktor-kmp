@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -64,7 +65,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.m3.markdownColor
 import com.mikepenz.markdown.m3.markdownTypography
+import com.mikepenz.markdown.model.DefaultMarkdownColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -339,13 +342,22 @@ class PageScreen(
         Column(
             modifier = Modifier
                 .then(
-                    if (state.isDragging) {
+                    if (state.mode is PageMode.Select) {
                         Modifier
+                            .heightIn(min = 80.dp, max = 100.dp)
+                            .padding(top = 8.dp)
                             .border(
                                 width = 1.dp,
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface.muted(),
                                 shape = RoundedCornerShape(5.dp)
                             )
+                    } else {
+                        Modifier
+                    }
+                )
+                .then(
+                    if (state.isDragging) {
+                        Modifier
                             .then(
                                 if (element.id == state.elements.getOrNull(state.draggableIndex!!)?.id) {
                                     Modifier.background(Color.Yellow)
@@ -355,61 +367,72 @@ class PageScreen(
                 )
                 .bringIntoViewRequester(bringIntoViewRequester)
         ) {
-            when (element) {
-                is ElementUI.Text -> {
-                    val title = element.text.takeIf { it.isNotBlank() } ?: "Введите текст"
-                    val color =
-                        if (element.text.isNotBlank()) MaterialTheme.colorScheme.onSurface else Color.Gray
-                    val fontStyle =
-                        if (element.text.isNotBlank()) FontStyle.Normal else FontStyle.Italic
-                    CompositionLocalProvider(LocalContentColor provides color) {
-                        Markdown(
-                            typography = markdownTypography(
-                                text = MaterialTheme.typography.bodyLarge.copy(
-
-                                )
-                            ),
-                            content = title,
-                            modifier = Modifier.padding(
-                                horizontal = paddHor,
-                                vertical = paddingVert
-                            )
-                        )
-                    }
-                }
-
-                is ElementUI.Link -> {
-                    val linkTitle = element.relatedPage.run {
-                        val relatedPage = this
-                        if (relatedPage == null) {
-                            "Ссылка не привязана"
-                        } else if (relatedPage.title.isNotBlank()) {
-                            relatedPage.title
-                        } else "Страница без названия"
-                    }
-                    Row(
-                        Modifier
-                            .clickable { offerIntent(PageIntent.OnElementClick(element)) }
-                            .padding(
-                                horizontal = paddHor,
-                                vertical = paddingVert
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            CompositionLocalProvider(LocalContentColor provides Color.LightGray) {
-                                Text(
-                                    text = linkTitle,
-                                    fontStyle = FontStyle.Italic,
-                                    color = AppColors.linkColor,
-                                )
-                            }
+            Column(Modifier.fillMaxWidth().height(200.dp)) {
+                when (element) {
+                    is ElementUI.Text -> {
+                        val title = element.text.takeIf { it.isNotBlank() } ?: "Введите текст"
+                        val color = if (element.text.isNotBlank()) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.muted()
                         }
-                        Icon(
-                            modifier = Modifier.padding(start = 10.dp),
-                            imageVector = if (element.isBound) Icons.Filled.ArrowForward else Icons.Filled.LinkOff,
-                            contentDescription = null
-                        )
+                        val fontStyle = if (element.text.isNotBlank()) {
+                            FontStyle.Normal
+                        } else {
+                            FontStyle.Italic
+                        }
+                        CompositionLocalProvider(LocalContentColor provides color) {
+                            Markdown(
+                                typography = markdownTypography(
+                                    text = MaterialTheme.typography.bodyLarge.copy(
+                                        fontStyle = fontStyle
+                                    )
+                                ),
+                                colors = markdownColor(
+                                    text = color,
+                                ),
+                                content = title,
+                                modifier = Modifier.padding(
+                                    horizontal = paddHor,
+                                    vertical = paddingVert
+                                )
+                            )
+                        }
+                    }
+
+                    is ElementUI.Link -> {
+                        val linkTitle = element.relatedPage.run {
+                            val relatedPage = this
+                            if (relatedPage == null) {
+                                "Ссылка не привязана"
+                            } else if (relatedPage.title.isNotBlank()) {
+                                relatedPage.title
+                            } else "Страница без названия"
+                        }
+                        Row(
+                            Modifier
+                                .clickable { offerIntent(PageIntent.OnElementClick(element)) }
+                                .padding(
+                                    horizontal = paddHor,
+                                    vertical = paddingVert
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                CompositionLocalProvider(LocalContentColor provides Color.LightGray) {
+                                    Text(
+                                        text = linkTitle,
+                                        fontStyle = FontStyle.Italic,
+                                        color = AppColors.linkColor,
+                                    )
+                                }
+                            }
+                            Icon(
+                                modifier = Modifier.padding(start = 10.dp),
+                                imageVector = if (element.isBound) Icons.Filled.ArrowForward else Icons.Filled.LinkOff,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }
