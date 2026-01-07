@@ -334,7 +334,7 @@ class PageScreen(
             onStopDragging = {
                 offerIntent(PageIntent.OnFinishDragging)
             },
-            isDraggable = state.mode is PageMode.Select && !isListNotDraggable.value
+            isDraggable = state.mode is PageMode.Reordering && !isListNotDraggable.value
         )
     }
 
@@ -349,7 +349,7 @@ class PageScreen(
         Column(
             modifier = Modifier
                 .then(
-                    if (state.mode is PageMode.Select) {
+                    if (state.mode is PageMode.Reordering) {
                         Modifier
                             .heightIn(min = 80.dp, max = 100.dp)
                             .padding(top = 8.dp)
