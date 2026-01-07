@@ -259,6 +259,9 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
     fun ImportDB() {
         Column(modifier = Modifier, horizontalAlignment = Alignment.Start) {
             Button(onClick = {
+                if (state.modifiedDBContent == state.lastDBContent) {
+                    viewModel.fetchDBContent()
+                }
                 postSideEffect(ShowOverlayEffect { ImportDBMenu() })
             }) {
                 Text(

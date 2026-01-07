@@ -47,7 +47,7 @@ class ProfileViewModel(
         fetchDBContent()
     }
 
-    private fun fetchDBContent() {
+    fun fetchDBContent() {
         editorUseCase.loadDBContent()
             .onEach {
                 reduce {
