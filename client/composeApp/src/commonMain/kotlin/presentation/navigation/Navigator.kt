@@ -21,6 +21,8 @@ interface NavState {
     fun moveToFront(screenId: String)
 
     fun isContainsScreenWithId(screenId: String) : Boolean
+
+    fun clearScreens()
 }
 
 class NavStateImpl(val viewModelStore: ViewModelStore) : NavState {
@@ -57,6 +59,10 @@ class NavStateImpl(val viewModelStore: ViewModelStore) : NavState {
 
     override fun isContainsScreenWithId(screenId: String): Boolean {
         return screens.value.firstOrNull { it.screenId == screenId } != null
+    }
+
+    override fun clearScreens() {
+        _screens.value = emptyList()
     }
 
 }

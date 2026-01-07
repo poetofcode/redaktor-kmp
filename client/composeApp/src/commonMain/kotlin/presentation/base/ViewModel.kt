@@ -92,9 +92,8 @@ fun BaseViewModel<*>.collectEffects() {
                     NavOptions.NONE -> navigatorInfo.navState.push(effect.screen)
                     NavOptions.REPLACE -> navigatorInfo.navState.moveToFront(effect.screen.screenId)
                     NavOptions.REPLACE_ALL -> {
-                        // TODO
-                        // navigatorInfo.navState.clearScreens()
-                        // navigatorInfo.navState.push(effect.screen)
+                        navigatorInfo.navState.clearScreens()
+                        navigatorInfo.navState.push(effect.screen)
                     }
                 }
             }

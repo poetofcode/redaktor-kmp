@@ -197,6 +197,7 @@ class FileEditorRepository(
 
     override suspend fun saveDBContent(dbContent: String) {
         dbProvider.saveContent(dbContent)
+        fetchAllData(force = true)
     }
 
     private suspend fun createStartPage(): Page {
@@ -214,8 +215,8 @@ class FileEditorRepository(
         return page
     }
 
-    private suspend fun fetchAllData(): PersistentData {
-        if (_data != null) {
+    private suspend fun fetchAllData(force: Boolean = false): PersistentData {
+        if (!force && _data != null) {
             return _data!!
         }
         return try {

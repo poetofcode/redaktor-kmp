@@ -122,12 +122,8 @@ class ProfileViewModel(
 
     fun onImportDbApply() {
         editorUseCase.saveDBContent(state.value.modifiedDBContent)
-            .onEach {
-                postSharedEvent(OnRefreshDBSharedEvent)
-            }
-            .catch {
-                postSideEffect(ShowSnackErrorEffect(it.toString()))
-            }
+            .onEach { postSharedEvent(OnRefreshDBSharedEvent) }
+            .catch { postSideEffect(ShowSnackErrorEffect(it.toString())) }
             .launchIn(viewModelScope)
     }
 

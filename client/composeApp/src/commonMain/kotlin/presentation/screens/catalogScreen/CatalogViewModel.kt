@@ -2,21 +2,20 @@ package presentation.screens.catalogScreen
 
 import data.utils.swap
 import domain.usecase.EditorUseCase
-import presentation.model.PageUI
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import presentation.base.BaseViewModel
 import presentation.base.postEffect
 import presentation.base.postSharedEvent
-import presentation.model.shared.OnPagesUpdatedEvent
+import presentation.model.PageUI
 import presentation.model.shared.OnPagePickedEvent
+import presentation.model.shared.OnPagesUpdatedEvent
+import presentation.model.shared.OnRefreshDBSharedEvent
 import presentation.navigation.NavigateBackEffect
 import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
-import presentation.screens.pageScreen.PageIntent
 import presentation.screens.pageScreen.PageScreen
-import presentation.screens.pageScreen.misc.ElementType
 
 class CatalogViewModel constructor(
     private val editorUseCase: EditorUseCase,
@@ -146,6 +145,15 @@ class CatalogViewModel constructor(
         when (event) {
             OnPagesUpdatedEvent -> {
                 fetchData()
+            }
+
+            is OnRefreshDBSharedEvent -> {
+                postEffect(
+                    NavigateEffect(
+                        CatalogScreen(isPicker = true),
+                        // options = NavOptions.REPLACE
+                    )
+                )
             }
         }
     }
