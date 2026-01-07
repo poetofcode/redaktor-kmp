@@ -38,6 +38,7 @@ class PageViewModel constructor(
 
     data class PageState(
         val pageId: String? = null,
+        val pageTitle: String? = null,
         val textState: String = "Page UI state",
         val elements: List<ElementUI> = emptyList(),
         val mode: PageMode = PageMode.View,
@@ -220,6 +221,7 @@ class PageViewModel constructor(
                 reduce {
                     copy(
                         pageId = page.id,
+                        pageTitle = page.title,
                         elements = elementsUI
                     )
                 }

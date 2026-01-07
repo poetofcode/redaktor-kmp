@@ -59,6 +59,7 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
@@ -523,11 +524,12 @@ class PageScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "Redaktor",
+                text = state.pageTitle ?: "Redaktor",
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(horizontal = 20.dp),
-                color = AppColors.categoryTextColor.muted()
+                color = AppColors.categoryTextColor.muted(),
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
