@@ -45,6 +45,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -55,10 +58,12 @@ import presentation.LocalMainAppState
 import presentation.Tabs
 import presentation.model.ActionUI
 import presentation.navigation.BaseScreen
+import presentation.navigation.CopyToClipboardSideEffect
 import presentation.navigation.HideBottomSheetEffect
 import presentation.navigation.HideOverlayEffect
 import presentation.navigation.ShowModalBottomSheetEffect
 import presentation.navigation.ShowOverlayEffect
+import presentation.navigation.SideEffect
 import presentation.navigation.postSideEffect
 import presentation.theme.AppColors
 import presentation.theme.AppTheme
@@ -78,9 +83,13 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
 
     val focusRequester = FocusRequester()
 
+    private lateinit var clipboardManager : ClipboardManager
+
+
     @Composable
     override fun Content() {
         val isAuth = state.profile != null
+        clipboardManager = LocalClipboardManager.current
 
         AppTheme {
             Column {
@@ -435,6 +444,18 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.align(Alignment.Center),
             )
+        }
+    }
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        when (sideEffect) {
+            is CopyToClipboardSideEffect -> {
+                clipboardManager.setText(
+                    AnnotatedString(sideEffect.text)
+                )
+            }
         }
     }
 

@@ -46,6 +46,8 @@ data class ShowOverlayEffect(
 
 data object HideOverlayEffect : SideEffect
 
+data class CopyToClipboardSideEffect(val text: String) : SideEffect
+
 /* SHARED EVENTS */
 
 interface SharedEvent

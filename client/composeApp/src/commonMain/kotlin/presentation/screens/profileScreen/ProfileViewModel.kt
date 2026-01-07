@@ -18,6 +18,7 @@ import presentation.model.ActionUI
 import presentation.model.shared.OnQuitProfileSharedEvent
 import presentation.model.shared.OnReceivedTokenSharedEvent
 import presentation.model.shared.OnRefreshDBSharedEvent
+import presentation.navigation.CopyToClipboardSideEffect
 import presentation.navigation.HideBottomSheetEffect
 import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
@@ -141,6 +142,7 @@ class ProfileViewModel(
                         )
                     )
                 }
+                postSideEffect(CopyToClipboardSideEffect(state.value.modifiedDBContent))
             }
 
             else -> Unit
