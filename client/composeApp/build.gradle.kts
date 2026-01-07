@@ -81,7 +81,31 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(
+                project.findProperty("RELEASE_KEYSTORE_PATH") as String
+            )
+            storePassword = project.findProperty("RELEASE_KEYSTORE_PASSWORD") as String
+            keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as String
+            keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String
+        }
+    }
+
     buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = false
+
+            signingConfig = signingConfigs.getByName("release")
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
         getByName("release") {
             isMinifyEnabled = false
         }
