@@ -12,6 +12,7 @@ import presentation.model.PageUI
 import presentation.model.shared.OnPagePickedEvent
 import presentation.model.shared.OnPagesUpdatedEvent
 import presentation.model.shared.OnRefreshDBSharedEvent
+import presentation.navigation.NavOptions
 import presentation.navigation.NavigateBackEffect
 import presentation.navigation.NavigateEffect
 import presentation.navigation.SharedEvent
@@ -150,8 +151,8 @@ class CatalogViewModel constructor(
             is OnRefreshDBSharedEvent -> {
                 postEffect(
                     NavigateEffect(
-                        CatalogScreen(isPicker = true),
-                        // options = NavOptions.REPLACE
+                        CatalogScreen(),
+                        options = NavOptions.REPLACE_ALL
                     )
                 )
             }
