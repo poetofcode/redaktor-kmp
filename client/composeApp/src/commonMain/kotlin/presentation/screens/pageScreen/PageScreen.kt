@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -367,7 +368,7 @@ class PageScreen(
                 )
                 .bringIntoViewRequester(bringIntoViewRequester)
         ) {
-            Column(Modifier.fillMaxWidth().height(200.dp)) {
+            Column(Modifier.fillMaxWidth().wrapContentHeight()) {
                 when (element) {
                     is ElementUI.Text -> {
                         val title = element.text.takeIf { it.isNotBlank() } ?: "Введите текст"
