@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.LinkOff
 import androidx.compose.material.icons.filled.Pageview
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
@@ -109,16 +110,21 @@ class PageScreen(
     override val isMenuVisible: Boolean = false
     val focusRequester = FocusRequester()
 
+    private fun handleBackButton() {
+        when (state.mode) {
+            is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
+            PageMode.Select -> offerIntent(PageIntent.OnFinishEditModeClick)
+            is PageMode.View -> viewModel.onBackPress()
+            PageMode.Reordering -> offerIntent(PageIntent.OnStartEditModeClick)
+        }
+    }
+
     @Composable
     override fun Content() {
         scope = rememberCoroutineScope()
 
         BackHandler {
-            when (state.mode) {
-                is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
-                PageMode.Select -> offerIntent(PageIntent.OnFinishEditModeClick)
-                is PageMode.View -> viewModel.onBackPress()
-            }
+            handleBackButton()
             true
         }
 
@@ -510,20 +516,20 @@ class PageScreen(
                 }
 
                 PageMode.Select -> {
-                    Pair(Icons.Filled.Visibility) { offerIntent(PageIntent.OnFinishEditModeClick) }
+                    Pair(Icons.Filled.Reorder) { offerIntent(PageIntent.OnStartReorderModeClick) }
                 }
 
                 is PageMode.Edit -> {
                     Pair(Icons.Filled.Save) { offerIntent(PageIntent.OnApplyElementChangesClick) }
                 }
+
+                PageMode.Reordering -> {
+                    Pair(Icons.Filled.Visibility) { offerIntent(PageIntent.OnFinishEditModeClick) }
+                }
             }
 
             IconButton(onClick = {
-                when (state.mode) {
-                    is PageMode.Edit -> offerIntent(PageIntent.OnDiscardChangesElementClick)
-                    PageMode.Select -> offerIntent(PageIntent.OnFinishEditModeClick)
-                    is PageMode.View -> viewModel.onBackPress()
-                }
+                handleBackButton()
             }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,

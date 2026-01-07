@@ -125,6 +125,10 @@ class PageViewModel constructor(
             is PageIntent.OnSelectElementType -> {
                 reduce { copy(elementType = intent.elementType) }
             }
+
+            PageIntent.OnStartReorderModeClick -> {
+                reduce { copy(mode = PageMode.Reordering) }
+            }
         }
     }
 
@@ -324,4 +328,5 @@ sealed class PageIntent {
     object OnApplyElementChangesClick : PageIntent()
     object OnDiscardChangesElementClick : PageIntent()
     object OnAddNewElementClick : PageIntent()
+    object OnStartReorderModeClick : PageIntent()
 }
