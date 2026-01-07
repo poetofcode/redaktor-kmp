@@ -34,6 +34,8 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.LinkOff
+import androidx.compose.material.icons.filled.Pageview
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -119,13 +121,15 @@ class PageScreen(
 
         LaunchedEffect(state.mode) {
             val mode = state.mode
-            reduceOverlayState { copy(
-                isVisible = when (mode) {
-                    is PageMode.Edit -> true
-                    else -> false
-                },
-                content = { EditElementOverlay() }
-            ) }
+            reduceOverlayState {
+                copy(
+                    isVisible = when (mode) {
+                        is PageMode.Edit -> true
+                        else -> false
+                    },
+                    content = { EditElementOverlay() }
+                )
+            }
         }
 
         // TODO Запилить что-то вроде CollectEffects и в нём обозревать эффект на старт редактирования
@@ -471,19 +475,21 @@ class PageScreen(
                 .height(54.dp)
                 .fillMaxWidth()
         ) {
-            val buttonParams: Pair<String, () -> Unit> = when (state.mode) {
+            // Icons.Filled.Edit
+
+            val buttonParams: Pair<ImageVector, () -> Unit> = when (state.mode) {
                 PageMode.View -> {
-                    Pair("Ред.") {
+                    Pair(Icons.Filled.Edit) {
                         offerIntent(PageIntent.OnStartEditModeClick)
                     }
                 }
 
                 PageMode.Select -> {
-                    Pair("Просмотр") { offerIntent(PageIntent.OnFinishEditModeClick) }
+                    Pair(Icons.Filled.Pageview) { offerIntent(PageIntent.OnFinishEditModeClick) }
                 }
 
                 is PageMode.Edit -> {
-                    Pair("Сохранить") { offerIntent(PageIntent.OnApplyElementChangesClick) }
+                    Pair(Icons.Filled.Save) { offerIntent(PageIntent.OnApplyElementChangesClick) }
                 }
             }
 
@@ -501,11 +507,17 @@ class PageScreen(
                 )
             }
 
-            Button(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                onClick = buttonParams.second
+            Box(
+                modifier = Modifier
+                    .clickable { buttonParams.second() }
+                    .padding(horizontal = 12.dp)
+                    .fillMaxHeight()
             ) {
-                Text(text = buttonParams.first)
+                Icon(
+                    modifier = Modifier.align(Alignment.Center),
+                    imageVector = buttonParams.first,
+                    contentDescription = "",
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
