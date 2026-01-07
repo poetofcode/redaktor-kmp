@@ -244,11 +244,13 @@ class CatalogScreen(
                     offerIntent(CatalogIntent.OnBindLink(page))
                 }
             }
-            ActionButton(imageVector = Icons.Filled.Edit) {
-                offerIntent(CatalogIntent.OnEditClick(page.id))
-            }
-            ActionButton(imageVector = Icons.Filled.Delete) {
-                offerIntent(CatalogIntent.OnDeleteClick(page.id))
+            if (!isPicker) {
+                ActionButton(imageVector = Icons.Filled.Edit) {
+                    offerIntent(CatalogIntent.OnEditClick(page.id))
+                }
+                ActionButton(imageVector = Icons.Filled.Delete) {
+                    offerIntent(CatalogIntent.OnDeleteClick(page.id))
+                }
             }
         }
     }
