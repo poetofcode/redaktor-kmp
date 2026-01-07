@@ -1,5 +1,6 @@
 package presentation.screens.profileScreen
 
+import androidx.compose.ui.text.input.TextFieldValue
 import data.repository.ProfileRepository
 import domain.model.Profile
 import domain.usecase.EditorUseCase
@@ -31,8 +32,10 @@ class ProfileViewModel(
     data class State(
         val profile: Profile? = null,
         val lastDBContent: String = "",
-        val modifiedDBContent: String = "",
-    )
+        val importTextFieldState: TextFieldValue = TextFieldValue("")
+    ) {
+        val modifiedDBContent: String get() = importTextFieldState.text
+    }
 
     init {
         fetchProfile()
@@ -48,7 +51,7 @@ class ProfileViewModel(
                 reduce {
                     copy(
                         lastDBContent = it,
-                        modifiedDBContent = it,
+                        importTextFieldState = state.value.importTextFieldState.copy(text = it),
                     )
                 }
             }
@@ -137,9 +140,9 @@ class ProfileViewModel(
         }
     }
 
-    fun onDBContentChanged(dbContentNew: String) {
+    fun onDBContentChanged(updatedState: TextFieldValue) {
         reduce { copy(
-            modifiedDBContent = dbContentNew
+            importTextFieldState = updatedState
         ) }
     }
 

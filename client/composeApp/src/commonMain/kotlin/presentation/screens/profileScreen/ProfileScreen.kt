@@ -283,10 +283,10 @@ class ProfileScreen : BaseScreen<ProfileViewModel>() {
                                 }
                             }
                         },
-                    value = state.modifiedDBContent,
+                    value = state.importTextFieldState,
                     maxLines = Int.MAX_VALUE,
                     onValueChange = {
-                        viewModel.onDBContentChanged(it)
+                        viewModel.onDBContentChanged(updatedState = it)
                         coroutineScope.launch {
                             bringIntoViewRequester.bringIntoView()
                         }
