@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -82,14 +83,21 @@ android {
         }
     }
 
+    val localProperties = Properties().apply {
+        val localPropsFile = rootProject.file("local.properties")
+        if (localPropsFile.exists()) {
+            load(localPropsFile.inputStream())
+        }
+    }
+
     signingConfigs {
         create("release") {
             storeFile = file(
-                project.findProperty("RELEASE_KEYSTORE_PATH") as String
+                localProperties["RELEASE_KEYSTORE_PATH"] as String
             )
-            storePassword = project.findProperty("RELEASE_KEYSTORE_PASSWORD") as String
-            keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as String
-            keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String
+            storePassword = localProperties["RELEASE_KEYSTORE_PASSWORD"] as String
+            keyAlias = localProperties["RELEASE_KEY_ALIAS"] as String
+            keyPassword = localProperties["RELEASE_KEY_PASSWORD"] as String
         }
     }
 
