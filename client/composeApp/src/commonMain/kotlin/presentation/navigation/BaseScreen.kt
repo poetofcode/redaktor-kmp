@@ -18,7 +18,6 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -85,10 +84,6 @@ abstract class BaseScreen<T : BaseViewModel<*>> : Screen<T> {
 
     @Composable
     fun PrepareContent() {
-        val scope = rememberCoroutineScope()
-        scope.launch {
-            SharedMemory.effectFlow.emit(SetBackHandlerEffect { false })
-        }
         setMainMenuVisibility()
 
         if (!isReady) {

@@ -20,7 +20,7 @@ data class NavigateBackEffect(
 ) : Effect
 
 data class SetBackHandlerEffect(
-    val cb: () -> Boolean
+    val cb: () -> Boolean,
 ) : Effect
 
 

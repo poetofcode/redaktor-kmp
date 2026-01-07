@@ -67,8 +67,9 @@ class CatalogScreen(
     @Composable
     override fun Content() {
         BackHandler {
-            offerIntent(CatalogIntent.OnCancelEditClick)
-            state.isEditing
+            state.isEditing.also {
+                offerIntent(CatalogIntent.OnCancelEditClick)
+            }
         }
         Column {
             Toolbar()
