@@ -35,7 +35,9 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.LinkOff
 import androidx.compose.material.icons.filled.Pageview
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -486,7 +488,7 @@ class PageScreen(
                 }
 
                 PageMode.Select -> {
-                    Pair(Icons.Filled.Pageview) { offerIntent(PageIntent.OnFinishEditModeClick) }
+                    Pair(Icons.Filled.Visibility) { offerIntent(PageIntent.OnFinishEditModeClick) }
                 }
 
                 is PageMode.Edit -> {
