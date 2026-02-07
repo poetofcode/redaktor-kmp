@@ -73,8 +73,8 @@ android {
         applicationId = "com.poetofcode.redaktor"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
     //apply(plugin = "com.google.gms.google-services")
     packaging {
@@ -137,7 +137,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Redaktor"
-            packageVersion = "1.0.0"
+            packageVersion = "1.1.0"
 
             macOS {
                 iconFile.set(project.file("src/desktopMain/resources/ic_logo.icns"))
